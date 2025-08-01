@@ -1,0 +1,988 @@
+body {
+
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #f7f7f7;
+}
+
+a {
+  color: #00B7FF;
+}
+#navbar {
+  height: 80px;
+  background-color: black;
+
+}
+#dashboard-navbar {
+  margin-left: 80px;
+  box-shadow: 0 1px 4px hsla(0, 0%, 0%, 0.16);
+  background-color: white;
+  position: fixed;
+height: 80px;
+
+}
+#sidebar {
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0; /* Sidebar is always visible */
+  width: 80px; /* Initially collapsed width */
+  background-color: #1b1c1d;
+  transition: width 0.3s ease-in-out;
+  z-index: 3000; /* Ensure it is above the content */
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+}
+#shipmentDetailModal header {
+  height:  100px;
+}
+
+.sidebar.active {
+  width: 250px; /* Expands when active */
+}
+
+.sidebar .nav-link {
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+}
+
+.sidebar .nav-link i {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.sidebar .nav-link span {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar.active .nav-link span {
+  opacity: 1; /* Show text when expanded */
+}
+
+.bg-dark-2 {
+  background-color: #1b1c1d;
+}
+
+
+.sidebar-header {
+  padding-top: 80px;
+  text-align: center;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#sidebar.active {
+  width: 240px;
+}
+#sidebar-logo {
+  width: auto !important;  /* override img-fluid’s width:100% */
+  height: 60px;
+  display: block;
+  margin: 16px auto;       /* center with some top/bottom space */
+}
+.sidebar-toggle {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+#sidebar .nav-link.active i {
+  color: #06ffc5;
+}
+.sidebar-toggle:focus {
+  outline: none;
+}
+
+
+.sidebar-header h5 {
+  display: none;
+}
+
+.sidebar.active .sidebar-header h5 {
+  display: block;
+}
+
+.sidebar ul {
+  padding-left: 0;
+}
+
+.sidebar ul li {
+  padding-left: 10px;
+}
+
+.sidebar ul li .nav-link i {
+  margin-right: 10px;
+}
+#logo {
+  height: 65px;
+  transform: rotate(45deg)
+}
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+#profile-image-complete {
+  height: 80px;
+  border-radius: 50%;
+}
+.content-section {
+  margin-top: 80px;
+
+}
+#newShipmentButton {
+  position: fixed;
+  bottom: 40px;
+  right: 100px;
+  z-index: 1050;
+}
+
+
+
+#newShipmentModal {
+  height: 700px !important;
+  margin-left: 80px;
+}
+#origin-autocomplete {
+  border: none;
+}
+.autocomplete-list {
+  border: none;
+}
+.autocomplete-item {
+  padding-left: 0;
+}
+.step-buttons {
+  display: flex;
+  justify-content: flex-end !important;
+  margin-top: 1rem;
+}    .autocomplete-list {
+       position: absolute;
+       z-index: 1050; /* one above Bootstrap modal */
+       background-color: white;
+       border: none;
+       width: 100%;
+       max-height: 200px;
+       overflow-y: auto;
+       overflow-x: hidden; /* KEY: Prevent horizontal scrollbar */
+       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+     }
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.modal-body {
+  overflow-x: hidden;
+}
+.autocomplete-item:hover {
+  background-color: #f1f1f1;
+}
+#tips-list {
+  font-size: 14px;
+}
+
+#posted-shipments-card {
+  padding: 20px;
+}
+
+
+
+
+
+
+
+.logistus {
+  height: 400px !important;
+
+}
+
+
+
+
+
+
+
+/* Custom CSS for the modal */
+.modal-header.bg-gradient-primary {
+  background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+  border-bottom: none;
+  padding: 1.5rem;
+
+}
+
+.shipment-progress {
+  padding-top: 1rem;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: rgba(255,255,255,0.3);
+  z-index: 1;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+
+}
+
+.step-label {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.step.active .step-icon {
+
+  color: #3a7bd5;
+}
+
+.step.completed .step-icon {
+
+  color: #3a7bd5;
+}
+
+.step.completed::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Style for editable fields in edit mode */
+[data-editable] input,
+[data-editable] select,
+[data-editable] textarea {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+}
+
+[data-editable] textarea {
+  min-height: 100px;
+}
+
+/* Style for the badge within editable spans in display mode */
+
+#modal-payment-status .badge,
+#modal-equipment .badge {
+  display: inline-block; /* Ensure badge takes up space */
+  padding: 0.35em 0.65em; /* Bootstrap's default badge padding */
+  font-size: 0.75em; /* Bootstrap's default badge font-size */
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+
+/* ---------------------shipmentDetailsModal------------------------- */
+/* Progress steps styling */
+.shipment-progress {
+  padding: 0 1rem;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 1rem;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.step-icon i {
+
+  font-size: 1.25rem;
+  z-index: 4000;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.step.active .step-icon {
+  background-color: white;
+}
+
+.step.active .step-label {
+  color: white;
+  font-weight: 500;
+}
+
+.step.completed .step-icon {
+  background-color: white;
+}
+
+/* Modal content styling */
+.modal-xl .modal-content {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding-bottom: 1rem;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.card {
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+
+
+
+.accordion-button:not(.collapsed) {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .modal-dialog {
+    margin: 0.5rem auto;
+  }
+}
+#getting-started {
+  position: fixed;
+  top: 80px;                             /* sit right under the navbar */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 80px);            /* fill below the navbar */
+
+  display: flex;                         /* keep your two-column flex layout */
+  flex-direction: row;
+
+  /* move it a full viewport height up off-screen */
+  transform: translateY(-100vh);
+  transition: transform 0.5s ease;
+  z-index: 900;                          /* beneath a navbar at z-index:1000 */
+}
+
+#getting-started.show {
+  /* slide it back down into place */
+  transform: translateY(0);
+}
+
+/* your two-column and centering rules */
+#getting-started .row {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding-top: 0;
+
+}
+#getting-started .col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* keep the <h1> and <p> centered horizontally */
+  justify-content: flex-start;
+}
+
+/* push each paragraph 100px below its preceding <h1> */
+#getting-started .col p {
+  margin-top: 40px;
+  padding-left: 80px; padding-right: 80px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 30px;
+}
+
+#getting-started h1 {
+  position: relative;
+  font-family: 'Raleway', sans-serif;
+  font-size: 60px;
+  margin-top: 35%;   /* small bottom margin if desired */
+}
+
+
+#getting-started .left  { background: #f2f2f2; }
+#getting-started .right { background: #ffffff; }
+
+
+.container-flex-left{
+  display: flex;
+  justify-content: left;
+}
+#index-container {
+  width: 100%;
+  padding: 0;
+  height: 600px;
+  z-index: 100;
+}
+.hero {
+  position: relative;
+  width: 100%;
+  height: 600px; /* optional: fullscreen height */
+  overflow: hidden;
+}
+
+#hero-video {
+  width: 100%;
+  height: 700px;
+
+  top: 0;
+  left: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  bottom: 40px;
+  left: 20px;
+  z-index: 2;
+}
+
+.hero-tagline {
+  color: white;
+  font-size: 3rem;
+  /* optional dark backdrop */
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Raleway', sans-serif;
+}
+.hero-p {
+  padding: 0.5rem 1rem;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
+  line-height: 1.5;
+}
+#hero-btn {
+  margin-left: 15px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  line-height: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  font-size: 120px;
+}
+.close-btn:hover {
+  color: #000;
+}
+#hero-video {
+  width: 100vw;      /* full viewport width */
+  height: auto;      /* maintain aspect ratio */
+  display: block;    /* remove inline-video whitespace */
+  object-fit: cover; /* cover the width if you also set a height */
+}
+
+/* 2) Pull the hero section up underneath the navbar */
+.hero {
+  position: relative;
+  margin-top: calc(-1 * var(--bs-navbar-height)); /* shift up by navbar height */
+  padding-top: var(--bs-navbar-height);           /* create space inside hero */
+  overflow: hidden;                                /* crop any overflow */
+}
+
+/* 3) Define your navbar height as a CSS variable */
+:root {
+  --bs-navbar-height: 80px; /* change this if your navbar height changes */
+}
+
+.service-section {
+  width: 100%;
+  height: 600px;
+  background-color: #ffffff;
+
+}
+
+.headtitle {
+  font-size: 42px;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+}
+.hero-p {
+  font-size: 18px;
+}
+
+.main-container {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+#sidebar {
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0; /* Sidebar is always visible */
+  width: 80px; /* Initially collapsed width */
+  background-color: #171717;
+  transition: width 0.3s ease-in-out;
+  z-index: 3000; /* Ensure it is above the content */
+  display: flex;
+  flex-direction: column;
+
+}
+
+
+.sidebar.active {
+  width: 250px; /* Expands when active */
+}
+
+.sidebar .nav-link {
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  padding: 15px;
+}
+
+.sidebar .nav-link i {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.sidebar .nav-link span {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar.active .nav-link span {
+  opacity: 1; /* Show text when expanded */
+}
+
+
+
+.sidebar-header {
+  padding-top: 80px;
+  text-align: center;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#sidebar.active {
+  width: 240px;
+}
+#sidebar-logo {
+  width: auto !important;  /* override img-fluid’s width:100% */
+  height: 60px;
+  display: block;
+  margin: 16px auto;       /* center with some top/bottom space */
+}
+.sidebar-toggle {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+#sidebar .nav-link.active i {
+  color: #06ffc5;
+}
+.sidebar-toggle:focus {
+  outline: none;
+}
+
+
+.sidebar-header h5 {
+  display: none;
+}
+
+.sidebar.active .sidebar-header h5 {
+  display: block;
+}
+
+.sidebar ul {
+  padding-left: 0;
+}
+
+.sidebar ul li {
+  padding-left: 10px;
+}
+
+.sidebar ul li .nav-link i {
+  margin-right: 10px;
+}
+.content-section {
+  margin-right: 0;
+
+  padding: 20px;
+}
+.autocomplete-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: none;
+  z-index: 2000;
+}
+
+.autocomplete-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+  background-color: #f0f0f0;
+}
+
+
+#newShipmentButton {
+  position: fixed;
+  bottom: 40px;
+  right: 100px;
+  z-index: 1050; /* above most content */
+}
+#newAccountButton {
+  position: fixed;
+  bottom: 40px;
+  left: 100px;
+  z-index: 1050; /* above most content */
+}
+#newAccountModal {
+  z-index: 3000;
+}
+#newShipmentModal {
+  z-index: 3000;
+}
+.autocomplete-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  position: absolute; top: 100%; left: 0; right: 0;
+  max-height: 180px; overflow-y: auto;
+  background: #fff; border: 1px solid #ccc; z-index: 2000;
+}
+.autocomplete-list li {
+  padding: 8px 12px; cursor: pointer;
+}
+.autocomplete-list li.active,
+.autocomplete-list li:hover {
+  background: #f0f0f0;
+}
+.autocomplete-list{list-style:none;margin:0;padding:0;position:absolute;top:100%;left:0;right:0;max-height:180px;overflow-y:auto;background:#fff;border:1px solid #ccc;z-index:2000}
+.autocomplete-list li{padding:8px 12px;cursor:pointer}
+.autocomplete-list li.active,.autocomplete-list li:hover{background:#f0f0f0}
+.autocomplete-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0; right: 0;
+  max-height: 180px;
+  overflow-y:auto;
+  background:#fff;
+  border:none;
+  z-index:2000;
+}
+.autocomplete-list li {
+  padding:8px 12px;
+  cursor:pointer;
+}
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+  background:#f0f0f0;
+}
+
+.content {
+  margin-left: 80px;
+  margin-top: 80px;
+}
+
+
+#shipmentDetailModal {
+
+  z-index: 3000;
+}
+#posted-shipments-card {
+  padding: 0;
+}
+#posted-shipments-card .card-body {
+  padding: 20px;
+}
+#posted-shipments-card .card-header {
+  height: 60px;
+}
+/* Shipment Table Filters Styling */
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.sortable:hover {
+  background-color: #f8f9fa;
+}
+
+.sort-icon {
+  font-size: 16px;
+  color: #6c757d;
+  margin-left: 4px;
+}
+
+.sortable.sort-asc .sort-icon::before {
+  content: 'keyboard_arrow_up';
+}
+
+.sortable.sort-desc .sort-icon::before {
+  content: 'keyboard_arrow_down';
+}
+
+
+.shipment-row {
+  transition: all 0.2s ease;
+}
+
+.shipment-row:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.shipment-row.filtered-out {
+  display: none;
+}
+
+/* Enhanced badges */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Filter section styling */
+#posted-shipments-card .card-body.bg-light {
+  background-color: #f8f9fa !important;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quick-filter {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .col-md-3, .col-md-2, .col-md-1 {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .card-body.bg-light,
+  .quick-filter,
+  .btn,
+  .material-symbols-outlined {
+    display: none !important;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+}
+
+/* Loading states */
+.loading-filters {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Filter active indicators */
+.form-control.filter-active,
+.form-select.filter-active {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#postedShipmentModal {
+  z-index: 3000;
+
+
+}
+#bookingModal {
+  z-index: 3000;
+}
+#activeShipmentModal {
+  z-index: 3000;
+}
+#cancelledShipmentModal {
+  z-index: 3000;
+}
+#modalStatus {
+  margin-left: 20px;
+}
+#cancelShipmentModal {
+  z-index: 3000;
+}
+#bookConfirmationModal{
+  z-index: 4000;
+}
+.modal-content {
+  font-size: 14px; /* Base font bump */
+}
+
+
+
+.card-body label, .card-body h6, .card-body .text-muted {
+  font-size: 1rem !important; /* Labels and subtext */
+  color: #444 !important;
+}
+
+[data-editable] {
+  font-size: 1rem !important;
+  color: #222;
+}
+
+ul.list-unstyled.small {
+  font-size: 0.95rem !important;
+}
+
+.modal-body .row > div {
+  margin-bottom: 1rem;
+}
+
+
+.step-icon i {
+  z-index: 4000;
+  color: blue;
+}
+
+.step-icon i:hover {
+  color: #03ff79;
+}
+
+.step-label {
+  font-size: 20px;
+}
+.step-icon i {
+  z-index: 4000;
+  color: blue;
+}
+
+.step-icon i:hover {
+  color: #03ff79;
+}
+
+.step-label {
+  font-size: 20px;
+}
+
+
+editable-inline {
+  border: 1px dashed #6c757d;
+  background-color: #f9f9f9;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  cursor: text;
+}
+
+.editable-inline:focus {
+  outline: none;
+  border-color: #0d6efd; /* Bootstrap primary */
+  background-color: #eef5ff;
+}
