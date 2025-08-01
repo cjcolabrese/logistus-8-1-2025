@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- META + CSS only -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+<body>
+{{{body}}}
+
+<!-- 1) jQuery FIRST -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJ+Y2EA+8m+6bSry5sre0Y+8qG2w3HbF3T8Eg=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK" crossorigin="anonymous"></script>
+
+<!-- 6) Your custom JS last! -->
+<script src="/javascripts/landing.js"></script>
+<script>
+    // wrap in DOMContentLoaded just to be safe
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('light-nav-button');
+        btn.addEventListener('click', () => {
+            document
+                    .querySelector('.landing-get-started')
+                    .classList.toggle('open');
+        });
+    });
+</script>
+<script src="/javascripts/dashboard/filters.js"></script>
+<script src="/javascripts/dashboard/newShipmentForm.js"></script>
+<script src="/javascripts/dashboard/ratePerMile.js"></script>
+<script src="/javascripts/dashboard/sidebar.js"></script>
+<script src="/javascripts/dashboard/showContent.js"></script>
+</body>
+</html>

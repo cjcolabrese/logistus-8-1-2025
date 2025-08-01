@@ -1,0 +1,119 @@
+<nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+    <div class="container-fluid">
+        <img src="/images/white-shadow.png" id="logo" alt="Logo">
+        <div class="ms-auto d-flex">
+            <a id="dark-nav-button" href="/auth/login" class="btn text-light d-flex align-items-center">
+                <span class="material-symbols-outlined me-2">contacts_product</span>
+                Login
+            </a>
+            <button id="light-nav-button" class="btn btn-light me-2" style="border:1px solid black">
+                Get Started
+            </button>
+        </div>
+    </div>
+</nav>
+<div id="index-container">
+    <div class="hero">
+        <video autoplay muted loop playsinline id="hero-video">
+            <source src="/videos/u.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-overlay" style="margin-top: 80px; width: 100%; ">
+            <div class="hero-overlay" style="padding-right: 60px;">
+                <h3 class="hero-tagline">Powering Scale in Logistics</h3>
+                <p class="hero-p">Leverage a powerful blend of cutting-edge technology, trusted partnerships, and scalable capacity to achieve impactful results. Logistus offers a comprehensive enterprise logistics suite designed to optimize supply chains by enhancing savings, transparency, and operational efficiency.</p>
+                <a class="btn btn-light" id="hero-btn">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" id="main-container">
+
+
+
+
+    <div class="service-section section">
+        <div class="container">
+            <h2 class="headtitle" style="margin-top: 80px;">
+                Get Instant Rates, Track in Real Time & Ship with Confidence.
+            </h2>
+
+            <div class="container-fluid text-center" style="margin-top: 80px;">
+                <div class="row">
+                    <!-- Left card -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <img src="https://images.pexels.com/photos/2199293/pexels-photo-2199293.jpeg" class="card-img-top" alt="Carriers Image">
+                            <div class="card-body text-start" style="background-color: #0c0c10; color: white; height: 250px;">
+                                <h5 class="card-title"
+                                    style="margin-top: 40px; font-size: 50px; font-family: 'Raleway', sans-serif;">
+                                    Shippers
+                                </h5>
+                                <p class="hero-p">Whether you’re a small business or a large enterprise, we have the software and solutions that you can tailor to your business to easily drive improvements.</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Right card -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <img src="https://images.pexels.com/photos/93398/pexels-photo-93398.jpeg"
+                                 class="card-img-top"
+                                 alt="Shippers Image">
+                            <div class="card-body text-start" style="background-color: #0c0c10; color: white; height: 250px; font-family: 'Raleway', sans-serif ">
+                                <h5 class="card-title"
+                                    style="margin-top: 40px; font-size: 50px; font-family: 'Raleway', sans-serif;">
+                                    Carriers
+                                </h5>
+                                <p class="hero-p">With upfront pricing, instant booking, 24/7 support, and facility ratings, Logistus puts you in the driver’s seat.</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="getting-started">
+        <button id="close-getting-started" class="close-btn">×</button>
+        <div class="row">
+            <div class="col left">
+                <h1>Carriers</h1>
+                <p>With instant quotes, live tracking, and 24/7 availability of trusted carriers, Logistus makes managing your logistics effortless.</p>
+            </div>
+            <div class="col right">
+                <h1>Shippers</h1>
+                <p>With upfront pricing, instant booking, and facility ratings, Logistus puts you in the driver’s seat.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn   = document.getElementById('light-nav-button');
+            const panel = document.getElementById('getting-started');
+            const btnClose = document.getElementById('close-getting-started');
+            btn.addEventListener('click', () => {
+                panel.classList.toggle('show');
+            });
+            btnClose.addEventListener('click', () => {
+                panel.classList.remove('show');
+            });
+        });
+    </script>
+</div>

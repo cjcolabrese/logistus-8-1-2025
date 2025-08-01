@@ -1,0 +1,51 @@
+<div class="sidebar" id="sidebar">
+    <img src="/images/white-shadow.png" class="img-fluid" id="sidebar-logo" style="height: 60px;">
+    <div class="sidebar-header">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="/dashboard" onclick="showContent('dashboardContent', this)">
+                <i class="material-symbols-outlined">dashboard</i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('freightContent', this)">
+                <i class="material-symbols-outlined">local_shipping</i>
+                <span>Freight Orders</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('routingContent', this)">
+                <i class="material-symbols-outlined">assignment</i>
+                <span>Orders</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('reportsContent')">
+                <i class="material-symbols-outlined">bar_chart</i>
+                <span>Reports</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('settingsContent')">
+                <i class="material-symbols-outlined">settings</i>
+                <span>Settings</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center position-relative" href="#"
+               onclick="showContent('notificationsContent')">
+                <i class="material-symbols-outlined">notifications</i>
+                {{#if unreadNotificationsCount}}
+                    <span id="notificationBadge" class="badge bg-danger ms-1">
+                        {{unreadNotificationsCount}}
+                    </span>
+                {{/if}}
+            </a>
+        </li>
+    </ul>
+</div>

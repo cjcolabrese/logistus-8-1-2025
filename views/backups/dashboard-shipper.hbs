@@ -1,0 +1,2431 @@
+<nav class="navbar navbar-expand-lg fixed-top" id="dashboard-navbar">
+    <div class="container-fluid">
+        <!--        <img src="/images/white-shadow.png" class="img-fluid" id="logo" id="logo">-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Align links to right using ms-auto -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav ms-auto d-flex align-items-center text-end">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle p-0" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <img src="{{user.profileImageUrl}}" class="profile-image" alt="Profile Image"
+                             id="profile-image">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="sidebar" id="sidebar">
+    <img src="/images/white-shadow.png" class="img-fluid" id="sidebar-logo" style="height: 60px;">
+    <div class="sidebar-header">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="/dashboard" onclick="showContent('dashboardContent', this)">
+                <i class="material-symbols-outlined">dashboard</i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('freightContent', this)">
+                <i class="material-symbols-outlined">local_shipping</i>
+                <span>Freight Orders</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('routingContent', this)">
+                <i class="material-symbols-outlined">assignment</i>
+                <span>Orders</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('reportsContent')">
+                <i class="material-symbols-outlined">bar_chart</i>
+                <span>Reports</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showContent('settingsContent')">
+                <i class="material-symbols-outlined">settings</i>
+                <span>Settings</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center position-relative" href="#"
+               onclick="showContent('notificationsContent')">
+                <i class="material-symbols-outlined">notifications</i>
+                {{#if unreadNotificationsCount}}
+                    <span id="notificationBadge" class="badge bg-danger ms-1">
+                        {{unreadNotificationsCount}}
+                    </span>
+                {{/if}}
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="content">
+    <div id="dashboardContent" class="content-section" >
+        <div class="card shadow-sm mb-4" >
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="padding: 15px;">
+                <h5 class="mb-0">Your Shipments</h5>
+                <span class="badge bg-light text-dark" id="shipment-count">{{userShipments.length}} total</span>
+            </div>
+
+            <!-- Advanced Filters Section -->
+            <div class="card-body border-bottom bg-light">
+                <div class="row g-3 align-items-end">
+                    <!-- Search Input -->
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1" style="padding-left: 10px;">Search
+                            Shipments</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="material-symbols-outlined"
+                                                              style="font-size: 18px;">search</i></span>
+                            <input type="text" id="search-filter" class="form-control"
+                                   placeholder="Shipment #, origin, destination...">
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Status</label>
+                        <select id="status-filter" class="form-select form-select-sm">
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Booked">Booked</option>
+                            <option value="In Transit">In Transit</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Invoiced">Invoiced</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Equipment Type Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Equipment</label>
+                        <select id="equipment-filter" class="form-select form-select-sm">
+                            <option value="">All Equipment</option>
+                            <option value="Dry Van">Dry Van</option>
+                            <option value="Reefer">Reefer</option>
+                            <option value="Flatbed">Flatbed</option>
+                            <option value="Power Only">Power Only</option>
+                            <option value="Step Deck">Step Deck</option>
+                            <option value="Conestoga">Conestoga</option>
+                            <option value="Container">Container</option>
+                            <option value="Box Truck">Box Truck</option>
+                            <option value="Cargo Van">Cargo Van</option>
+                            <option value="Gooseneck">Gooseneck</option>
+                            <option value="Hot Shot">Hot Shot</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Pickup Date</label>
+                        <input type="date" id="date-from-filter" class="form-control form-control-sm"
+                               placeholder="From">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">To Date</label>
+                        <input type="date" id="date-to-filter" class="form-control form-control-sm" placeholder="To">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-md-1">
+                        <div class="d-flex gap-1">
+                            <button type="button" id="clear-filters" class="btn btn-outline-secondary btn-sm"
+                                    title="Clear all filters">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">clear</i>
+                            </button>
+                            <button type="button" id="export-filtered" class="btn btn-outline-primary btn-sm"
+                                    title="Export filtered results">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">download</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="mt-3" style="margin: 10px;">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <!--                        <span class="small text-muted" style="margin-left: 20px">Quick filters:</span>-->
+                        <button type="button" class="btn btn-outline-success btn-sm quick-filter" data-filter="status"
+                                data-value="Available">
+                            Available Only
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm quick-filter" data-filter="status"
+                                data-value="Booked">
+                            Booked Only
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter="date"
+                                data-value="today">
+                            Today's Pickups
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm quick-filter" data-filter="date"
+                                data-value="week">
+                            This Week
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm quick-filter"
+                                data-filter="equipment" data-value="Dry Van">
+                            Dry Van Only
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body table-responsive">
+                {{#if userShipments.length}}
+                    <table class="table table-hover align-middle" id="shipmentsTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="sortable" data-sort="shipmentNumber">
+                                Shipment #
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="origin">
+                                Origin
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="destination">
+                                Destination
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="distance">
+                                Distance
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="pickupDate">
+                                Pickup
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="deliveryDate">
+                                Delivery
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="rate">
+                                Rate
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="equipmentType">
+                                Equipment
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="weight">
+                                Weight
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="status">
+                                Status
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="shipments-tbody">
+                        {{#each userShipments}}
+                            <tr class="shipment-row" data-id="{{this._id}}"
+                                data-shipment-number="{{this.shipmentNumber}}"
+                                data-origin="{{this.origin.city}}, {{this.origin.state}}"
+                                data-destination="{{this.destination.city}}, {{this.destination.state}}"
+                                data-status="{{this.status}}"
+                                data-equipment="{{this.equipmentType}}"
+                                data-pickup="{{this.pickupDate}}"
+                                data-delivery="{{this.deliveryDate}}"
+                                data-rate="{{this.rate.amount}}"
+                                data-distance="{{this.distance}}"
+                                data-weight="{{this.weight}}">
+                                <td class="fw-medium">{{this.shipmentNumber}}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.origin.city}}, {{this.origin.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.origin.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.destination.city}}
+                                                , {{this.destination.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.destination.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{this.distance}} mi</span>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div class="fw-medium">{{formatDate this.pickupDate}}</div>
+
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div class="fw-medium">{{formatDate this.deliveryDate}}</div>
+
+                                    </div>
+                                </td>
+                                <td>
+                                    {{#if this.baseRate.amount}}
+                                        <div class="fw-medium">${{formatCurrency this.baseRate.amount}}</div>
+                                        <small class="text-muted">
+                                            {{#if this.ratePerMile}}
+                                                ${{formatCurrency this.ratePerMile}}/mi
+                                            {{else}}
+                                                —
+                                            {{/if}}
+                                        </small>
+                                    {{else}}
+                                        <em class="text-muted">N/A</em>
+                                    {{/if}}
+                                </td>
+
+
+                                <td>
+                                    <span class="badge bg-secondary">{{this.equipmentType}}</span>
+                                </td>
+                                <td>
+                                    {{formatNumber this.weight}} lbs
+                                </td>
+                                <td>
+                                    {{this.status}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+
+                    <!-- Results Summary -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="text-muted small">
+                            Showing <span id="visible-count">{{userShipments.length}}</span> of <span
+                                id="total-count">{{userShipments.length}}</span> shipments
+                        </div>
+                        <div class="d-flex gap-2">
+
+                        </div>
+                    </div>
+                {{else}}
+                    <div class="text-center py-5">
+                        <i class="material-symbols-outlined text-muted mb-3" style="font-size: 64px;">local_shipping</i>
+                        <h6 class="text-muted">No shipments posted yet</h6>
+                        <p class="text-muted mb-3">Get started by creating your first shipment</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newShipmentModal">
+                            <i class="material-symbols-outlined me-2">add</i>
+                            Create First Shipment
+                        </button>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    <div id="freightContent" class="content-section" style="display: none;">
+        <h1>hello</h1>
+    </div>
+</div>
+<div class="modal fade" id="shipmentDetailsModal" tabindex="-1" aria-labelledby="shipmentDetailsModalLabel" aria-hidden="true">
+    <style>
+
+    </style>
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0">
+            <!-- Modal Header with Status Progress -->
+            <div class="modal-header position-relative bg-gradient-primary text-white pb-4">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="modal-title mb-1" id="shipmentDetailsModalLabel">
+                                <span id="modal-shipment-number" class="me-2"></span>
+                                <span class="badge rounded-pill align-middle" id="modal-status"></span>
+                            </h5>
+                            <div class="text-white-50 small" id="modal-route">
+                                <span id="modal-origin"></span>
+                                <i class="material-symbols-outlined mx-2" style="font-size:1rem;">arrow_right_alt</i>
+                                <span id="modal-destination"></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" id="close-modal-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="shipment-progress mt-3">
+                        <div class="progress-steps">
+                            <div class="step booked">
+                                <div class="step-icon"><i class="material-symbols-outlined">assignment</i></div>
+                                <div class="step-label">Booked</div>
+                            </div>
+                            <div class="step in-transit">
+                                <div class="step-icon"><i class="material-symbols-outlined">local_shipping</i></div>
+                                <div class="step-label">In Transit</div>
+                            </div>
+                            <div class="step delivered">
+                                <div class="step-icon"><i class="material-symbols-outlined">location_on</i></div>
+                                <div class="step-label">Delivered</div>
+                            </div>
+                            <div class="step invoiced">
+                                <div class="step-icon"><i class="material-symbols-outlined">receipt</i></div>
+                                <div class="step-label">Invoiced</div>
+                            </div>
+                            <div class="step paid">
+                                <div class="step-icon"><i class="material-symbols-outlined">payments</i></div>
+                                <div class="step-label">Paid</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body pt-4">
+                <div class="row g-4">
+                    <!-- Left Column -->
+                    <div class="col-lg-6 d-flex flex-column">
+                        <!-- Shipment Overview Card - Made flex column to control height -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header" style="padding: 20px;">
+                                <h2 style="font-size: 24px;">Shipment Overview</h2>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Shipment Type</label>
+                                            <div id="modal-shipment-type" data-editable="shipmentType" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Equipment Type</h2>
+                                        <div id="modal-equipment" data-editable="equipmentType" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Commodity</h2>
+                                        <div id="modal-commodity" data-editable="commodity" style="font-size: 12px;"> </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Quantity</h2>
+                                        <div id="modal-quantity" data-editable="quantity" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Weight (lbs)</h2>
+                                        <div id="modal-weight" data-editable="weight" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h2 style="font-size: 16px; margin-bottom: 10px;">Pallets</label>
+                                            <div id="modal-pallets" data-editable="pallets" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Dimensions</label>
+                                        <div id="modal-dimensions" data-editable="dimensions" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Hazmat Class</label>
+                                        <div id="modal-hazmat-class" data-editable="hazmatClass" style="font-size: 12px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Temp Control</label>
+                                        <div id="modal-temperature-control" data-editable="temperatureControl"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Distance (mi)</label>
+                                        <div id="modal-distance" data-editable="distance"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Rate per Mile</label>
+                                        <div id="modal-rate-per-mile" data-editable="ratePerMile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Summary Card -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header" style="padding: 20px;">
+                                <h2 style="font-size: 24px;">Financial Summary</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <label class="d-block text-muted small mb-1">Total Rate</label>
+                                        <h4 class="mb-0 text-primary" id="modal-total-rate" data-editable="totalRate"></h4>
+                                    </div>
+                                    <div class="text-end">
+                                        <label class="d-block text-muted small mb-1">Payment Status</label>
+                                        <span class="badge" id="modal-payment-status" data-editable="paymentStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="bg-light p-3 rounded">
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Base Rate</span>
+                                        <span id="modal-base-rate" data-editable="baseRate.amount" type="currency"></span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Accessorials</span>
+                                        <span id="accessorial-total" data-editable="accessorials-total" type="currency">$</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-semibold">
+                                        <span>Total</span>
+                                        <span id="total-rate" data-editable="total-rate" type="currency">$</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Payment Terms</label>
+                                    <div id="modal-payment-terms" data-editable="paymentTerms"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Shipment Value</label>
+                                    <div id="modal-shipment-value" data-editable="shipmentValue"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Insurance Amount</label>
+                                    <div id="modal-insurance-amount" data-editable="insuranceAmount"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-lg-6 d-flex flex-column">
+                        <!-- Route Details Card - Made flex column to match height -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header" style="padding: 20px;">
+                                <h2 style="font-size: 24px;">Route Details</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div id="map" style="height: 200px; width: 100%;"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="d-flex">
+                                            <div>
+                                                <h3 style="font-size: 18px; font-weight: bold;">Pickup Location</h3>
+                                                <div class="text-muted fw-normal" style="font-size: 1rem;">
+                                                    <span id="modal-origin-address"  data-editable="origin.address" style="font-size: 16px;" ></span>
+                                                    <br>
+                                                    <span id="modal-origin-city"  data-editable="origin.city" style="font-size: 16px;"></span>
+                                                    <span id="modal-origin-state"  data-editable="origin.state" style="font-size: 16px;"></span>
+                                                    <span id="modal-origin-zip" data-editable="origin.zipcode" style="font-size: 16px;"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small" style="margin-top: 20px;">
+                                                    <i class="material-symbols-outlined me-1" style="color: rgba(9,197,255,0.9);">calendar_today</i>
+                                                    <span id="modal-pickup-date" data-editable="pickupDate" style="font-size:10px;"></span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="d-flex">
+                                            <div>
+                                                <h3 style="font-size: 18px; font-weight: bold;">Delivery Location</h3>
+                                                <div class="text-muted fw-normal" style="font-size: 1rem;">
+                                                    <span id="modal-destination-address"  data-editable="destination.address" style="font-size: 16px;"></span>
+                                                    <br>
+                                                    <span id="modal-destination-city"  data-editable="destination.city" style="font-size: 16px;"></span>
+                                                    <span id="modal-destination-state"  data-editable="destination.state" style="font-size: 16px;"></span>
+                                                    <span id="modal-destination-zip" data-editable="destination.zipcode" style="font-size: 16px;"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small" style="margin-top: 20px;">
+                                                    <i class="material-symbols-outlined me-1" style="color: rgba(9,197,255,0.9);">calendar_today</i>
+                                                    <span id="modal-delivery-date" data-editable="deliveryDate" style="font-size:10px;"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Map Placeholder -->
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Accessorials Card -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header" style="padding: 20px;">
+                                <h2 style="font-size: 24px;">Accessorials</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Shipment</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1">
+                                                <label><input type="checkbox" data-editable="accessorials.shipment.hazmat" class="form-check-input me-1"> Hazmat</label>
+                                            </li>
+                                            <li class="mb-1">
+                                                <label><input type="checkbox" data-editable="accessorials.shipment.overdimension" class="form-check-input me-1"> Overdimension</label>
+                                            </li>
+                                            <li class="mb-1">
+                                                <label><input type="checkbox" data-editable="accessorials.shipment.prepaidAndAdd" class="form-check-input me-1"> Prepaid & Add</label>
+                                            </li>
+                                            <li>
+                                                <label><input type="checkbox" data-editable="accessorials.shipment.freezeProtection" class="form-check-input me-1"> Freeze Protection</label>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Pickup -->
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Pickup</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.inside" class="form-check-input me-1"> Inside</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.liftgate" class="form-check-input me-1"> Liftgate</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.limitedAccess" class="form-check-input me-1"> Limited Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.notifyConsignee" class="form-check-input me-1"> Notify Consignee</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.militaryAccess" class="form-check-input me-1"> Military Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.residential" class="form-check-input me-1"> Residential</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.airport" class="form-check-input me-1"> Airport</label></li>
+                                            <li><label><input type="checkbox" data-editable="accessorials.pickup.groceryWarehouse" class="form-check-input me-1"> Grocery Warehouse</label></li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Delivery -->
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Delivery</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.inside" class="form-check-input me-1"> Inside</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.liftgate" class="form-check-input me-1"> Liftgate</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.limitedAccess" class="form-check-input me-1"> Limited Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.notifyConsignee" class="form-check-input me-1"> Notify Consignee</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.militaryAccess" class="form-check-input me-1"> Military Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.residential" class="form-check-input me-1"> Residential</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.appointment" class="form-check-input me-1"> Appointment</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.airport" class="form-check-input me-1"> Airport</label></li>
+                                            <li><label><input type="checkbox" data-editable="accessorials.delivery.groceryWarehouse" class="form-check-input me-1"> Grocery Warehouse</label></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contacts Card -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header" style="padding: 20px;">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">contacts</i> Contacts</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Shipper</h6>
+                                        <div class="mb-1" id="modal-shipper-name" data-editable="shipperContact.name"></div>
+                                        <div class="mb-1" id="modal-shipper-phone" data-editable="shipperContact.phone"></div>
+                                        <div id="modal-shipper-email" data-editable="shipperContact.email"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Consignee</h6>
+                                        <div class="mb-1" id="modal-consignee-name" data-editable="consigneeContact.name"></div>
+                                        <div class="mb-1" id="modal-consignee-phone" data-editable="consigneeContact.phone"></div>
+                                        <div id="modal-consignee-email" data-editable="consigneeContact.email"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <h6 class="fw-semibold small mb-2">Emergency Contact</h6>
+                                        <div class="mb-1" id="modal-emergency-name" data-editable="emergencyContact.name"></div>
+                                        <div class="mb-1" id="modal-emergency-phone" data-editable="emergencyContact.phone"></div>
+                                        <div id="modal-emergency-email" data-editable="emergencyContact.email"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents & Notes Card -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">description</i> Documents & Notes</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Special Instructions</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-special-instructions" data-editable="specialInstructions"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Notes</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-notes" data-editable="notes"></div>
+                                </div>
+                                <div>
+                                    <label class="d-block text-muted small mb-2">Tags</label>
+                                    <div id="modal-tags" data-editable="tags"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-2">Attachments</label>
+                                    <div class="d-flex flex-wrap gap-2" id="modal-attachments">
+                                        <!-- Attachments will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary d-flex align-items-center" data-bs-dismiss="modal" id="close-modal-btn">
+                    <i class="material-symbols-outlined me-1">close</i>
+                    <span>Close</span>
+                </button>
+
+                <button id="cancelEditBtn" class="btn btn-secondary d-none">Cancel</button>
+                <button id="saveShipmentBtn" class="btn btn-primary d-none">Save</button>
+                <button id="editShipmentBtn" class="btn btn-outline-primary">Edit</button>
+                <button class="btn btn-success" id="bookButton"  type="button">Book</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const accessorials = {
+        shipment: {
+            hazmat: true,
+            overdimension: false,
+            prepaidAndAdd: true,
+            freezeProtection: false,
+        },
+        pickup: {
+            inside: true,
+            liftgate: false,
+            limitedAccess: true,
+            notifyConsignee: false,
+            militaryAccess: false,
+            residential: true,
+            airport: false,
+            groceryWarehouse: false,
+        },
+        delivery: {
+            inside: false,
+            liftgate: true,
+            limitedAccess: false,
+            notifyConsignee: true,
+            militaryAccess: false,
+            residential: true,
+            appointment: true,
+            airport: false,
+            groceryWarehouse: true,
+        }
+    };
+
+    function updateAccessorialCheckboxes(accessorials) {
+        for (const category in accessorials) {
+            for (const key in accessorials[category]) {
+                const value = accessorials[category][key];
+                const selector = `[data-editable="accessorials.${category}.${key}"]`;
+                const checkbox = document.querySelector(selector);
+                if (checkbox) {
+                    checkbox.checked = !!value;
+                }
+            }
+        }
+    }
+
+    // Run this when modal loads or data changes
+    document.addEventListener('DOMContentLoaded', () => {
+        updateAccessorialCheckboxes(accessorials);
+    });
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsfTIPST3VlB6Wz4hnUalfzSxAPPd6Ct4&callback=onGoogleMapsReady"></script>
+<script>
+    function onGoogleMapsReady() {
+        // Optional preload hook
+    }
+
+    function initMapWithRoute(origin, destination) {
+        if (!window.google || !google.maps) {
+            console.error("Google Maps not loaded");
+            return;
+        }
+
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: false,
+            preserveViewport: false,
+        });
+
+        const request = {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        directionsService.route(request, function (result, status) {
+            if (status === "OK") {
+                directionsRenderer.setDirections(result);
+            } else {
+                console.error("Could not display route due to:", status);
+            }
+        });
+    }
+
+</script>
+
+
+<div class="modal fade" id="newShipmentModal" tabindex="-1" aria-labelledby="newShipmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog.modal-xl">
+        <div class="modal-content">
+            <form id="newShipmentForm" action="/api/shipments/newShipment" method="POST" novalidate>
+                <!-- Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newShipmentModalLabel">Create New Shipment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body d-flex">
+
+                    <!-- Left: Form Steps & Quick Tips -->
+                    <div class="pe-4" style="width: 280px; flex-shrink: 0;">
+                        <!-- Progress -->
+                        <h6>Step <span id="stepIndicator">1</span> of 4</h6>
+                        <div class="progress mb-4">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width:25%"></div>
+                        </div>
+                        <!-- Quick Tips -->
+                        <div class="card mb-4">
+                            <div class="card-header">Quick Tips</div>
+                            <div class="card-body small">
+                                <ul class="ps-3 mb-0" id="tips-list">
+                                    <li>Use full address for accurate rates.</li>
+                                    <li>Check hazmat class if applicable.</li>
+                                    <li>Double-check pickup/delivery windows.</li>
+                                    <li>Reserve Price ≈ min acceptable bid.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Actual Form -->
+                    <div class="flex-fill" style="min-width: 0;">
+                        <!-- Critical min-width constraint -->
+                        <!-- SECTION 1: Basics -->
+                        <fieldset class="mb-4">
+                            <legend>Basics</legend>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Pickup Date & Time *</label>
+                                    <input type="datetime-local"
+                                           name="pickupDate"
+                                           class="form-control"
+                                           required>
+                                    <div class="invalid-feedback">Pickup datetime required.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Delivery Date & Time *</label>
+                                    <input type="datetime-local"
+                                           name="deliveryDate"
+                                           class="form-control"
+                                           required>
+                                    <div class="invalid-feedback">Delivery datetime required.</div>
+                                </div>
+                            </div>
+                            <div class="row g-3" style="margin-top: 20px;">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="shipmentType">Shipment Type *</label>
+                                    <select id="shipmentType" name="shipmentType" class="form-select" required>
+                                        <option value="">Choose type…</option>
+                                        <option>Full Truckload</option>
+                                        <option>Less Than Truckload</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a shipment type.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="equipmentType">Equipment Type *</label>
+                                    <select id="equipmentType" name="equipmentType" class="form-select" required>
+                                        <option value="">Choose equipment…</option>
+                                        <option>Dry Van</option>
+                                        <option>Reefer</option>
+                                        <option>Flatbed</option>
+                                        <option>Power Only</option>
+                                        <option>Step Deck</option>
+                                        <option>Conestoga</option>
+                                        <option>Container</option>
+                                        <option>Box Truck</option>
+                                        <option>Cargo Van</option>
+                                        <option>Gooseneck</option>
+                                        <option>Hot Shot</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select equipment.</div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 2: Addresses -->
+                        <fieldset class="mb-4">
+                            <legend>Addresses</legend>
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="addressMode"
+                                           id="addressMode-account" value="account" checked>
+                                    <label class="form-check-label" for="addressMode-account">Select from
+                                        Account/Location</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="addressMode"
+                                           id="addressMode-manual" value="manual">
+                                    <label class="form-check-label" for="addressMode-manual">Enter Addresses
+                                        Manually</label>
+                                </div>
+                            </div>
+                            <!-- Account/Location Mode -->
+                            <div id="accountAddresses" class="row g-4">
+                                <!-- Origin -->
+                                <div class="col-md-6">
+                                    <h6>Origin</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="originAccount">Account</label>
+                                        <select id="originAccount" name="origin[accountId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Account…</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="originLocation">Location</label>
+                                        <select id="originLocation" name="origin[locationId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Location…</option>
+                                        </select>
+                                    </div>
+                                    <!-- Display contact info below both selectors -->
+                                    <div id="originContactDisplay" class="mt-3 small text-muted"></div>
+                                </div>
+                                <!-- Destination -->
+                                <div class="col-md-6">
+                                    <h6>Destination</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="destAccount">Account</label>
+                                        <select id="destAccount" name="destination[accountId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Account…</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="destLocation">Location</label>
+                                        <select id="destLocation" name="destination[locationId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Location…</option>
+                                        </select>
+                                    </div>
+                                    <!-- Display contact info below both selectors -->
+                                    <div id="destContactDisplay" class="mt-3 small text-muted"></div>
+                                </div>
+                            </div>
+                            <!-- Manual Address Mode -->
+                            <div id="manualAddresses" class="row g-4" style="display: none;">
+                                <div class="col-md-6">
+                                    <h6>Origin</h6>
+                                    <div class="mb-2 position-relative">
+                                        <input type="text" id="origin-address" name="origin[address]"
+                                               class="form-control address-input" data-group="origin"
+                                               placeholder="Start typing address…" required>
+                                        <ul id="origin-list" class="autocomplete-list"></ul>
+                                        <div class="invalid-feedback">Origin address required.</div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="text" id="origin-city" name="origin[city]" class="form-control"
+                                                   placeholder="City" required>
+                                            <div class="invalid-feedback">City required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="origin-state" name="origin[state]"
+                                                   class="form-control" placeholder="State" maxlength="2" required>
+                                            <div class="invalid-feedback">State required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="origin-zip" name="origin[zipcode]"
+                                                   class="form-control" placeholder="Zip" required>
+                                            <div class="invalid-feedback">Zip code required.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Destination</h6>
+                                    <div class="mb-2 position-relative">
+                                        <input type="text" id="dest-address" name="destination[address]"
+                                               class="form-control address-input" data-group="dest"
+                                               placeholder="Start typing address…" required>
+                                        <ul id="dest-list" class="autocomplete-list"></ul>
+                                        <div class="invalid-feedback">Destination address required.</div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="text" id="dest-city" name="destination[city]"
+                                                   class="form-control" placeholder="City" required>
+                                            <div class="invalid-feedback">City required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="dest-state" name="destination[state]"
+                                                   class="form-control" placeholder="State" maxlength="2" required>
+                                            <div class="invalid-feedback">State required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="dest-zip" name="destination[zipcode]"
+                                                   class="form-control" placeholder="Zip" required>
+                                            <div class="invalid-feedback">Zip code required.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Distance field (always visible at bottom of address section) -->
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="distance">Distance (mi)</label>
+                                    <input type="number" id="distance" name="distance" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <!-- Hidden fields for Origin -->
+                            <input type="hidden" name="origin[resolvedAddress]" id="hiddenOriginAddress">
+                            <input type="hidden" name="origin[resolvedCity]" id="hiddenOriginCity">
+                            <input type="hidden" name="origin[resolvedState]" id="hiddenOriginState">
+                            <input type="hidden" name="origin[resolvedZip]" id="hiddenOriginZip">
+                            <!-- Hidden fields for Destination -->
+                            <input type="hidden" name="destination[resolvedAddress]" id="hiddenDestAddress">
+                            <input type="hidden" name="destination[resolvedCity]" id="hiddenDestCity">
+                            <input type="hidden" name="destination[resolvedState]" id="hiddenDestState">
+                            <input type="hidden" name="destination[resolvedZip]" id="hiddenDestZip">
+                        </fieldset>
+                        <!-- SECTION 3: Details -->
+                        <fieldset class="mb-4">
+                            <legend>Details</legend>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Weight (lbs)</label>
+                                    <input type="number"
+                                           name="weight"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Dimensions (L×W×H in)</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][length]"
+                                               class="form-control"
+                                               placeholder="L">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][width]"
+                                               class="form-control"
+                                               placeholder="W">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][height]"
+                                               class="form-control"
+                                               placeholder="H">
+                                    </div>
+                                </div>
+                            </div>
+                            <legend style="margin-top: 1rem;">Accessorials</legend>
+                            <div class="row g-3">
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Shipment Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][hazmat]"
+                                                                   id="acc-hazmat"><label class="form-check-label"
+                                                                                          for="acc-hazmat">Hazardous
+                                        Materials</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][overdimension]"
+                                                                   id="acc-overdim"><label class="form-check-label"
+                                                                                           for="acc-overdim">Overdimension</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][prepaidAndAdd]"
+                                                                   id="acc-prepaid"><label class="form-check-label"
+                                                                                           for="acc-prepaid">Prepaid and
+                                        Add</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][freezeProtection]"
+                                                                   id="acc-freeze"><label class="form-check-label"
+                                                                                          for="acc-freeze">Freeze
+                                        Protection</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Pickup Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][inside]"
+                                                                   id="pickup-inside"><label class="form-check-label"
+                                                                                             for="pickup-inside">Inside
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][liftgate]"
+                                                                   id="pickup-liftgate"><label class="form-check-label"
+                                                                                               for="pickup-liftgate">Liftgate
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][limitedAccess]"
+                                                                   id="pickup-limited"><label class="form-check-label"
+                                                                                              for="pickup-limited">Limited
+                                        Access Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][notifyConsignee]"
+                                                                   id="pickup-notify"><label class="form-check-label"
+                                                                                             for="pickup-notify">Notify
+                                        Consignee Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][militaryAccess]"
+                                                                   id="pickup-military"><label class="form-check-label"
+                                                                                               for="pickup-military">Military
+                                        Access Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][residential]"
+                                                                   id="pickup-res"><label class="form-check-label"
+                                                                                          for="pickup-res">Residential
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][airport]"
+                                                                   id="pickup-airport"><label class="form-check-label"
+                                                                                              for="pickup-airport">Airport
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][groceryWarehouse]"
+                                                                   id="pickup-grocery"><label class="form-check-label"
+                                                                                              for="pickup-grocery">Grocery
+                                        Warehouse Pickup</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Delivery Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][inside]"
+                                                                   id="delivery-inside"><label class="form-check-label"
+                                                                                               for="delivery-inside">Inside
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][liftgate]"
+                                                                   id="delivery-liftgate"><label
+                                            class="form-check-label" for="delivery-liftgate">Liftgate Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][limitedAccess]"
+                                                                   id="delivery-limited"><label class="form-check-label"
+                                                                                                for="delivery-limited">Limited
+                                        Access Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][notifyConsignee]"
+                                                                   id="delivery-notify"><label class="form-check-label"
+                                                                                               for="delivery-notify">Notify
+                                        Consignee Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][militaryAccess]"
+                                                                   id="delivery-military"><label
+                                            class="form-check-label" for="delivery-military">Military Access
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][residential]"
+                                                                   id="delivery-res"><label class="form-check-label"
+                                                                                            for="delivery-res">Residential
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][appointment]"
+                                                                   id="delivery-appointment"><label
+                                            class="form-check-label" for="delivery-appointment">Appointment
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][airport]"
+                                                                   id="delivery-airport"><label class="form-check-label"
+                                                                                                for="delivery-airport">Airport
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][groceryWarehouse]"
+                                                                   id="delivery-grocery"><label class="form-check-label"
+                                                                                                for="delivery-grocery">Grocery
+                                        Warehouse Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 4: Financials & Bidding -->
+                        <fieldset class="mb-4" style="display: none;">
+                            <legend>Financials & Bidding</legend>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Rate ($) *</label>
+                                    <input type="number"
+                                           name="rate[amount]"
+                                           class="form-control"
+                                           step="0.01"
+                                           required>
+                                    <div class="invalid-feedback">Rate is required.</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Rate per Mile</label>
+                                    <input type="number"
+                                           name="ratePerMile[amount]"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Reserve Price</label>
+                                    <input type="number"
+                                           name="reservePrice"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="biddingEnabled"
+                                               name="biddingEnabled">
+                                        <label class="form-check-label" for="biddingEnabled">
+                                            Enable Bidding
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Bidding End Date</label>
+                                    <input type="datetime-local"
+                                           name="biddingEndDate"
+                                           class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Payment Terms</label>
+                                    <input type="text"
+                                           name="paymentTerms"
+                                           class="form-control"
+                                           placeholder="Prepaid, COD…">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Shipment Value ($)</label>
+                                    <input type="number"
+                                           name="shipmentValue"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Tags</label>
+                                    <input type="text"
+                                           name="tags"
+                                           class="form-control"
+                                           placeholder="fragile, high-value…">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 5: Requirements & Contacts -->
+                        <fieldset class="mb-4">
+                            <legend>Requirements & Contacts</legend>
+                            <div class="row g-4">
+                                <!-- Requirements -->
+                                <!-- Contacts -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Shipper Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="shipperContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="shipperContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="shipperContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Consignee Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="consigneeContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="consigneeContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="consigneeContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Emergency Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="emergencyContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="emergencyContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="emergencyContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 6: Instructions & Notes -->
+                        <fieldset class="mb-4">
+                            <legend>Instructions & Notes</legend>
+                            <div class="mb-3">
+                                <label class="form-label" for="specialInstructions">Special Instructions</label>
+                                <textarea id="specialInstructions" name="specialInstructions" class="form-control"
+                                          rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="notes">Notes</label>
+                                <textarea id="notes" name="notes" class="form-control" rows="3"
+                                          maxlength="500"></textarea>
+                            </div>
+
+
+                            <div id="accessorialPricingFields"></div>
+                        </fieldset>
+
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <div id="stepNavContainer" class="d-flex justify-content-between w-100"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<button id="newShipmentButton" class="btn btn-primary">New Shipment</button>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#accountCreationModal"
+        id="newAccountButton">
+    Create New Account
+</button>
+{{> newAccountModal}}
+
+<!--<script src="/javascripts/dashboard/shipmentDetailsModal.js"></script>-->
+<script src="/javascripts/dashboard/filters.js"></script>
+<!--<script src="/javascripts/dashboard/newShipmentForm.js"></script>-->
+<script src="/javascripts/dashboard/ratePerMile.js"></script>
+<script src="/javascripts/dashboard/sidebar.js"></script>
+<script src="/javascripts/dashboard/showContent.js"></script>
+<script src="/javascripts/dashboard/reloadModal.js"></script>
+<script>
+    // Updated fetchAndDisplayLocationContact function
+    document.querySelectorAll('input[type="checkbox"][name^="accessorials"]').forEach(checkbox => {
+        checkbox.addEventListener('change', async () => {
+            const accountId = document.getElementById('originAccount')?.value;
+            if (!accountId || !checkbox.checked) return;
+
+            const pricing = await fetchAccessorialPricing(accountId);
+            if (!pricing) return;
+
+            updateAccessorialPricingFields(pricing);
+        });
+    });
+
+    async function fetchAndStoreLocationContact(accountId, locationId, contactType) {
+        if (!accountId || !locationId) return null;
+
+        try {
+            const res = await fetch(`/accounts/${accountId}/locations/${locationId}/locationContact`);
+            if (!res.ok) throw new Error('Failed to fetch location contact');
+            const contact = await res.json();
+
+            // Store the contact in hidden fields
+            if (contact) {
+                updateOrCreateField(`${contactType}[name]`, contact.name || '');
+                updateOrCreateField(`${contactType}[phone]`, contact.phoneNumber || '');
+                updateOrCreateField(`${contactType}[email]`, contact.email || '');
+            }
+
+            return contact;
+        } catch (err) {
+            console.error('Error fetching location contact:', err);
+            return null;
+        }
+    }
+    async function fetchAccessorialPricing(accountId) {
+        try {
+            const res = await fetch(`/accounts/${accountId}/accessorials`);
+
+            if (!res.ok) throw new Error('Failed to fetch accessorial pricing');
+            return await res.json();
+        } catch (err) {
+            console.error('❌ Error fetching accessorial pricing:', err);
+            return null;
+        }
+    }
+    function updateOrCreateField(name, value) {
+        const container = document.getElementById('accessorialPricingFields');
+        if (!container) {
+            console.error("❌ accessorialPricingFields container not found.");
+            return;
+        }
+
+        // Create table if it doesn't exist
+        let table = container.querySelector('table');
+        if (!table) {
+            table = document.createElement('table');
+            table.className = 'table table-sm table-bordered align-middle mb-0';
+            table.innerHTML = `
+            <thead>
+                <tr>
+                    <th style="width: 70%">Accessorial</th>
+                    <th style="width: 30%">Price ($)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
+            container.innerHTML = ''; // Clear placeholder message if present
+            container.appendChild(table);
+        }
+
+        const tbody = table.querySelector('tbody');
+        const existingRow = tbody.querySelector(`tr[data-field="${name}"]`);
+
+        const label = labelize(name);
+
+        if (existingRow) {
+            const input = existingRow.querySelector('input');
+            if (input) input.value = value;
+        } else {
+            const row = document.createElement('tr');
+            row.dataset.field = name;
+
+            const labelCell = document.createElement('td');
+            labelCell.textContent = label;
+
+            const inputCell = document.createElement('td');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = name;
+            input.readOnly = true;
+            input.className = 'form-control form-control-sm';
+            input.value = value;
+
+            inputCell.appendChild(input);
+            row.appendChild(labelCell);
+            row.appendChild(inputCell);
+            tbody.appendChild(row);
+        }
+
+        function labelize(name) {
+            const match = name.match(/\[([^\]]+)\]/g);
+            if (!match) return name;
+            const parts = match.map(s => s.replace(/[\[\]]/g, ''));
+            return parts.map(capitalize).join(' → ');
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    }
+
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[type="checkbox"][name^="accessorials"]').forEach(checkbox => {
+            checkbox.addEventListener('change', async () => {
+                const accountId = document.getElementById('originAccount')?.value;
+                if (!accountId || !checkbox.checked) return;
+
+                const pricing = await fetchAccessorialPricing(accountId);  // <- this fetches the data
+                console.log("🚚 Accessorial pricing received:", pricing);  // <- add this line here
+
+                if (!pricing) return;
+
+                updateAccessorialPricingFields(pricing);  // <- updates the DOM
+            });
+        });
+
+    });
+
+    function updateAccessorialPricingFields(pricing) {
+
+        for (const [section, items] of Object.entries(pricing)) {
+            if (typeof items !== 'object') continue;
+
+            for (const [key, price] of Object.entries(items)) {
+                const checkbox = document.querySelector(`input[name="accessorials[${section}][${key}]"]`);
+
+                if (checkbox?.checked) {
+                    updateOrCreateField(`accessorialPricing[${section}][${key}]`, price);
+                } else {
+                    updateOrCreateField(`accessorialPricing[${section}][${key}]`, 0);
+                }
+            }
+        }
+    }
+
+
+    // Update the location change event listeners
+    if (originLocation) {
+        originLocation.addEventListener('change', async () => {
+            await calcDistanceIfReady();
+            await populateAddressFields();
+            await fetchAndStoreLocationContact(originAccount.value, originLocation.value, 'shipperContact');
+            // Display logic remains the same
+            await fetchAndDisplayLocationContact(originAccount.value, originLocation.value, 'originContactDisplay');
+        });
+    }
+
+    if (destLocation) {
+        destLocation.addEventListener('change', async () => {
+            await calcDistanceIfReady();
+            await populateAddressFields();
+            await fetchAndStoreLocationContact(destAccount.value, destLocation.value, 'consigneeContact');
+            // Display logic remains the same
+            await fetchAndDisplayLocationContact(destAccount.value, destLocation.value, 'destContactDisplay');
+        });
+    }
+
+    // Update the form submission handler
+    document.getElementById("newShipmentForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const shipmentValue = parseFloat(get('shipmentValue'));
+        if (isNaN(shipmentValue)) delete shipmentData.shipmentValue;
+
+        // Grab values - now includes consigneeContact
+        const data = {
+            shipmentType: form.shipmentType.value,
+            status: form.status.value,
+            pickupDate: form.pickupDate.value,
+            deliveryDate: form.deliveryDate.value,
+            origin: {
+                address: form.originAddress.value,
+                city: form.originCity.value,
+                state: form.originState.value,
+            },
+            destination: {
+                address: form.destinationAddress.value,
+                city: form.destinationCity.value,
+                state: form.destinationState.value,
+            },
+            equipmentType: form.equipmentType.value,
+            commodity: form.commodity.value,
+            distance: parseFloat(form.distance.value),
+            quantity: parseInt(form.quantity.value) || undefined,
+            weight: parseFloat(form.weight.value) || undefined,
+            pallets: parseInt(form.pallets.value) || undefined,
+            hazmatClass: form.hazmatClass.value,
+            temperatureControl: form.temperatureControl.value === "true",
+
+            baseRate: {
+                amount: parseFloat(form.rateAmount.value),
+                currency: form.currency.value,
+            },
+            ratePerMile: parseFloat(form.ratePerMile.value) || 0,
+            reservePrice: parseFloat(form.reservePrice.value) || 0,
+            biddingEnabled: form.biddingEnabled.value === "true",
+            shipmentValue,
+            shipperContact: {
+                name: form.shipperContactName.value || form.querySelector('input[name="shipperContact[name]"]')?.value || '',
+                phone: form.shipperContactPhone.value || form.querySelector('input[name="shipperContact[phone]"]')?.value || '',
+                email: form.shipperContactEmail.value || form.querySelector('input[name="shipperContact[email]"]')?.value || '',
+            },
+            consigneeContact: {
+                name: form.querySelector('input[name="consigneeContact[name]"]')?.value || '',
+                phone: form.querySelector('input[name="consigneeContact[phone]"]')?.value || '',
+                email: form.querySelector('input[name="consigneeContact[email]"]')?.value || '',
+            },
+            accessorials: {
+                shipment: {
+                    hazmat: form.querySelector('input[name="accessorials[shipment][hazmat]"]')?.checked || false,
+                    overdimension: form.querySelector('input[name="accessorials[shipment][overdimension]"]')?.checked || false,
+                    prepaidAndAdd: form.querySelector('input[name="accessorials[shipment][prepaidAndAdd]"]')?.checked || false,
+                    freezeProtection: form.querySelector('input[name="accessorials[shipment][freezeProtection]"]')?.checked || false
+                },
+                pickup: {
+                    inside: form.querySelector('input[name="accessorials[pickup][inside]"]')?.checked || false,
+                    liftgate: form.querySelector('input[name="accessorials[pickup][liftgate]"]')?.checked || false,
+                    limitedAccess: form.querySelector('input[name="accessorials[pickup][limitedAccess]"]')?.checked || false,
+                    notifyConsignee: form.querySelector('input[name="accessorials[pickup][notifyConsignee]"]')?.checked || false,
+                    militaryAccess: form.querySelector('input[name="accessorials[pickup][militaryAccess]"]')?.checked || false,
+                    residential: form.querySelector('input[name="accessorials[pickup][residential]"]')?.checked || false,
+                    airport: form.querySelector('input[name="accessorials[pickup][airport]"]')?.checked || false,
+                    groceryWarehouse: form.querySelector('input[name="accessorials[pickup][groceryWarehouse]"]')?.checked || false
+                },
+                delivery: {
+                    inside: form.querySelector('input[name="accessorials[delivery][inside]"]')?.checked || false,
+                    liftgate: form.querySelector('input[name="accessorials[delivery][liftgate]"]')?.checked || false,
+                    limitedAccess: form.querySelector('input[name="accessorials[delivery][limitedAccess]"]')?.checked || false,
+                    notifyConsignee: form.querySelector('input[name="accessorials[delivery][notifyConsignee]"]')?.checked || false,
+                    militaryAccess: form.querySelector('input[name="accessorials[delivery][militaryAccess]"]')?.checked || false,
+                    residential: form.querySelector('input[name="accessorials[delivery][residential]"]')?.checked || false,
+                    appointment: form.querySelector('input[name="accessorials[delivery][appointment]"]')?.checked || false,
+                    airport: form.querySelector('input[name="accessorials[delivery][airport]"]')?.checked || false,
+                    groceryWarehouse: form.querySelector('input[name="accessorials[delivery][groceryWarehouse]"]')?.checked || false
+                },
+                accessorialPricing: collectAccessorialPricing(),
+            }
+        };
+
+        try {
+            const res = await fetch("/shipments/newShipment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                console.error("❌ Error saving shipment:", result);
+                alert("Failed to save shipment: " + (result?.error || "Unknown error"));
+                return;
+            }
+
+            console.log("✅ Shipment created:", result);
+            alert("Shipment created successfully!");
+
+            // Optionally close modal + reset form
+            const modal = bootstrap.Modal.getInstance(document.getElementById("newShipmentModal"));
+            modal.hide();
+            form.reset();
+
+        } catch (err) {
+            console.error("❌ Network error:", err);
+            alert("Error saving shipment: " + err.message);
+        }
+    });
+    function collectAccessorialPricing() {
+        const pricingInputs = form.querySelectorAll('input[name^="accessorialPricing"]');
+        const pricing = {};
+
+        pricingInputs.forEach(input => {
+            const match = input.name.match(/^accessorialPricing\[(\w+)\]\[(\w+)\]$/);
+            if (!match) return;
+
+            const [_, section, key] = match;
+            if (!pricing[section]) pricing[section] = {};
+            pricing[section][key] = parseFloat(input.value) || 0;
+        });
+
+        return pricing;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Prevent multiple initializations
+        if (window.shipmentModalInitialized) return;
+        window.shipmentModalInitialized = true;
+
+        // DOM Elements
+        const form = document.getElementById('newShipmentForm');
+        const modal = document.getElementById('newShipmentModal');
+        const stepIndicator = document.getElementById('stepIndicator');
+        const progressBar = document.getElementById('progressBar');
+        const originAccount = document.getElementById('originAccount');
+        const originLocation = document.getElementById('originLocation');
+        const destAccount = document.getElementById('destAccount');
+        const destLocation = document.getElementById('destLocation');
+        const distanceField = document.getElementById('distance');
+
+        // Early exit if critical elements missing
+        if (!form || !modal) return;
+
+        // Dynamic location management for New Account Modal
+        let locationIndex = 1;
+
+        // Global function for adding locations (shared with New Account Modal)
+        if (!window.addLocation) {
+            window.addLocation = function() {
+                const container = document.getElementById('locationsContainer');
+                if (!container) return;
+
+                const template = document.querySelector('.location-group');
+                if (!template) return;
+
+                const newLocation = template.cloneNode(true);
+                // Clear inputs and update their name attributes
+                newLocation.querySelectorAll('input').forEach(inp => {
+                    inp.value = '';
+                    const name = inp.getAttribute('name');
+                    if (name) {
+                        const updatedName = name.replace(/\[0\]/, '[' + locationIndex + ']');
+                        inp.setAttribute('name', updatedName);
+                    }
+                });
+                container.appendChild(newLocation);
+                locationIndex++;
+            };
+        }
+
+        // Address mode toggle
+        function showAddresses(mode) {
+            const accountDiv = document.getElementById('accountAddresses');
+            const manualDiv = document.getElementById('manualAddresses');
+
+            if (accountDiv) accountDiv.style.display = mode === 'account' ? '' : 'none';
+            if (manualDiv) manualDiv.style.display = mode === 'manual' ? '' : 'none';
+
+            // Set required attributes based on mode
+            setAddressModeRequirements(mode);
+        }
+
+        // Consolidated address mode requirements function
+        function setAddressModeRequirements(mode) {
+            const toggle = (id, required) => {
+                const el = document.getElementById(id);
+                if (el) el.required = required;
+            };
+
+            const toggleGroup = (prefix, required) => {
+                ['address','city','state','zip'].forEach(f => toggle(`${prefix}-${f}`, required));
+            };
+
+            // Account/Location fields
+            ['originAccount','originLocation','destAccount','destLocation'].forEach(id =>
+                    toggle(id, mode === 'account')
+            );
+
+            // Manual address fields
+            ['origin','dest'].forEach(prefix => toggleGroup(prefix, mode === 'manual'));
+        }
+
+        // Address utilities
+        function getSelectedAddressString(prefix) {
+            const addressEl = document.getElementById(`${prefix}-address`);
+            const cityEl = document.getElementById(`${prefix}-city`);
+            const stateEl = document.getElementById(`${prefix}-state`);
+            const zipEl = document.getElementById(`${prefix}-zip`);
+
+            return [
+                addressEl?.value,
+                cityEl?.value,
+                stateEl?.value,
+                zipEl?.value
+            ].filter(Boolean).join(', ');
+        }
+
+        async function getAddressStrings(mode) {
+            if (mode === 'account') {
+                const oA = originAccount?.value, oL = originLocation?.value;
+                const dA = destAccount?.value, dL = destLocation?.value;
+                if (!(oA && oL && dA && dL)) return {};
+
+                try {
+                    const [oRes, dRes] = await Promise.all([
+                        fetch(`/accounts/${oA}/locations/${oL}`).then(r => r.ok ? r.json() : null),
+                        fetch(`/accounts/${dA}/locations/${dL}`).then(r => r.ok ? r.json() : null)
+                    ]);
+
+                    if (!oRes || !dRes) return {};
+
+                    return {
+                        origin: `${oRes.address}, ${oRes.city}, ${oRes.state} ${oRes.zip}`,
+                        destination: `${dRes.address}, ${dRes.city}, ${dRes.state} ${dRes.zip}`
+                    };
+                } catch (err) {
+                    console.error('Failed to fetch account locations:', err);
+                    return {};
+                }
+            } else {
+                return {
+                    origin: getSelectedAddressString('origin'),
+                    destination: getSelectedAddressString('dest')
+                };
+            }
+        }
+
+        // NEW: Populate address fields from account locations
+        async function populateAddressFields() {
+            console.log('🔍 populateAddressFields called');
+
+            const mode = document.querySelector('input[name="addressMode"]:checked')?.value;
+            console.log('📋 Address mode:', mode);
+
+            if (mode === 'account') {
+                const oA = originAccount?.value, oL = originLocation?.value;
+                const dA = destAccount?.value, dL = destLocation?.value;
+
+                console.log('🏢 Account selections:', { oA, oL, dA, dL });
+
+                if (!(oA && oL && dA && dL)) {
+                    console.warn('⚠️ Missing account/location selections');
+                    return false;
+                }
+
+                try {
+                    console.log('🌐 Fetching location data...');
+                    const [oRes, dRes] = await Promise.all([
+                        fetch(`/accounts/${oA}/locations/${oL}`).then(r => {
+                            console.log('📡 Origin API response status:', r.status);
+                            return r.ok ? r.json() : null;
+                        }),
+                        fetch(`/accounts/${dA}/locations/${dL}`).then(r => {
+                            console.log('📡 Destination API response status:', r.status);
+                            return r.ok ? r.json() : null;
+                        })
+                    ]);
+
+                    console.log('📍 Origin location data:', oRes);
+                    console.log('📍 Destination location data:', dRes);
+
+                    if (!oRes || !dRes) {
+                        console.error('❌ Failed to fetch location data');
+                        return false;
+                    }
+
+                    // Create or update origin address fields with proper names
+                    updateOrCreateField('origin[address]', oRes.address || '');
+                    updateOrCreateField('origin[city]', oRes.city || '');
+                    updateOrCreateField('origin[state]', oRes.state || '');
+                    updateOrCreateField('origin[zipcode]', oRes.zip || oRes.zipcode || '');
+
+                    // Create or update destination address fields with proper names
+                    updateOrCreateField('destination[address]', dRes.address || '');
+                    updateOrCreateField('destination[city]', dRes.city || '');
+                    updateOrCreateField('destination[state]', dRes.state || '');
+                    updateOrCreateField('destination[zipcode]', dRes.zip || dRes.zipcode || '');
+
+                    console.log('✅ Populated address fields:', {
+                        origin: {
+                            address: oRes.address,
+                            city: oRes.city,
+                            state: oRes.state,
+                            zipcode: oRes.zip || oRes.zipcode
+                        },
+                        destination: {
+                            address: dRes.address,
+                            address: dRes.address,
+                            city: dRes.city,
+                            state: dRes.state,
+                            zipcode: dRes.zip || dRes.zipcode
+                        }
+                    });
+
+                    return true;
+                } catch (err) {
+                    console.error('❌ Failed to populate address fields:', err);
+                    console.error('❌ Error stack:', err.stack);
+                    return false;
+                }
+            }
+
+            console.log('ℹ️ Manual mode - no address population needed');
+            return true; // Manual mode doesn't need special handling
+        }
+
+        // Helper function to create or update form fields
+        function updateOrCreateField(name, value) {
+            console.log(`🔧 updateOrCreateField: ${name} = "${value}"`);
+
+            let field = form.querySelector(`input[name="${name}"]`);
+
+            if (!field) {
+                // Create hidden field if it doesn't exist
+                console.log(`➕ Creating new hidden field: ${name}`);
+                field = document.createElement('input');
+                field.type = 'hidden';
+                field.name = name;
+                form.appendChild(field);
+            } else {
+                console.log(`✏️ Updating existing field: ${name}`);
+            }
+
+            field.value = value;
+            console.log(`✅ Set ${name} = "${value}"`);
+        }
+
+        // Distance calculation
+        async function calcDistanceIfReady() {
+            const mode = document.querySelector('input[name="addressMode"]:checked')?.value;
+            if (!mode || !distanceField) return;
+
+            const { origin, destination } = await getAddressStrings(mode);
+            if (!origin || !destination || origin.length < 8 || destination.length < 8) {
+                distanceField.value = '';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/shipments/distance?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`);
+                if (!res.ok) throw new Error('Distance fetch failed');
+                const data = await res.json();
+                distanceField.value = data.distance.toFixed(1);
+
+                // Trigger change event for other listeners
+                distanceField.dispatchEvent(new Event('change'));
+            } catch (err) {
+                distanceField.value = '';
+                console.error('Distance calculation failed:', err);
+            }
+        }
+
+        // Load accounts and populate dropdowns
+        async function loadAccounts() {
+            if (!originAccount || !destAccount) return;
+
+            // Set loading state
+            originAccount.innerHTML = '<option>Loading…</option>';
+            destAccount.innerHTML = '<option>Loading…</option>';
+
+            try {
+                const res = await fetch('/accounts');
+                if (!res.ok) throw new Error('Failed to fetch accounts');
+
+                const accounts = await res.json();
+                const options = accounts.length ?
+                        `<option value="">Choose Account…</option>` +
+                        accounts.map(a => `<option value="${a._id}">${a.accountName}</option>`).join('')
+                        : `<option value="">No accounts found</option>`;
+
+                originAccount.innerHTML = options;
+                destAccount.innerHTML = options;
+            } catch (e) {
+                console.error('Failed loading accounts:', e);
+                originAccount.innerHTML = `<option value="">Failed to load accounts</option>`;
+                destAccount.innerHTML = `<option value="">Failed to load accounts</option>`;
+            }
+
+            // Reset location dropdowns
+            if (originLocation) originLocation.innerHTML = `<option value="">Select an account first</option>`;
+            if (destLocation) destLocation.innerHTML = `<option value="">Select an account first</option>`;
+        }
+
+        // Load locations for selected account
+        async function loadLocationsForAccount(accountId, locationSelect) {
+            if (!locationSelect) return;
+
+            locationSelect.innerHTML = '<option>Loading…</option>';
+
+            if (!accountId) {
+                locationSelect.innerHTML = '<option value="">Select an account first</option>';
+                calcDistanceIfReady();
+                return;
+            }
+
+            try {
+                const res = await fetch(`/accounts/${accountId}/locations`);
+                if (!res.ok) throw new Error('Failed to fetch locations');
+
+                const locs = await res.json();
+                locationSelect.innerHTML = locs.length
+                        ? `<option value="">Choose Location…</option>` +
+                        locs.map(l => `<option value="${l._id}">${l.name} - ${l.address}, ${l.city}, ${l.state}</option>`).join('')
+                        : '<option value="">No locations found</option>';
+            } catch (err) {
+                console.error('Failed to load locations:', err);
+                locationSelect.innerHTML = '<option value="">Failed to load locations</option>';
+            }
+
+            calcDistanceIfReady();
+        }
+        async function fetchAndStoreLocationContact(accountId, locationId, contactType) {
+            if (!accountId || !locationId) return null;
+
+            try {
+                const res = await fetch(`/accounts/${accountId}/locations/${locationId}/locationContact`);
+                if (!res.ok) throw new Error('Failed to fetch location contact');
+                const contact = await res.json();
+
+                // Store the contact in hidden form fields
+                if (contact) {
+                    updateOrCreateField(`${contactType}[name]`, contact.name || '');
+                    updateOrCreateField(`${contactType}[phone]`, contact.phoneNumber || '');
+                    updateOrCreateField(`${contactType}[email]`, contact.email || '');
+                }
+
+                return contact;
+            } catch (err) {
+                console.error('Error fetching location contact:', err);
+                return null;
+            }
+        }
+
+        async function fetchAndDisplayLocationContact(accountId, locationId, contactType) {
+            if (!accountId || !locationId) return;
+
+            try {
+                const contact = await fetchAndStoreLocationContact(accountId, locationId, contactType);
+                const displayEl = document.getElementById(`${contactType}Display`);
+
+                if (displayEl) {
+                    // Create a container with both display and hidden form fields
+                    displayEl.innerHTML = `
+                <div class="contact-display">
+                    <strong>Contact:</strong><br>
+                    ${contact?.name || 'Not specified'}<br>
+                    ${contact?.phoneNumber || 'Not specified'}<br>
+                    ${contact?.email || 'Not specified'}
+                </div>
+                <input type="hidden" name="${contactType}[name]" value="${contact?.name || ''}">
+                <input type="hidden" name="${contactType}[phone]" value="${contact?.phoneNumber || ''}">
+                <input type="hidden" name="${contactType}[email]" value="${contact?.email || ''}">
+            `;
+                }
+            } catch (err) {
+                console.error('Error displaying location contact:', err);
+                const displayEl = document.getElementById(`${contactType}Display`);
+                if (displayEl) {
+                    displayEl.innerHTML = `
+                <em>Failed to load contact info.</em>
+                <input type="hidden" name="${contactType}[name]" value="">
+                <input type="hidden" name="${contactType}[phone]" value="">
+                <input type="hidden" name="${contactType}[email]" value="">
+            `;
+                }
+            }
+        }
+        if (originLocation) {
+            originLocation.addEventListener('change', async () => {
+                await calcDistanceIfReady();
+                await populateAddressFields();
+                await fetchAndDisplayLocationContact(
+                        originAccount.value,
+                        originLocation.value,
+                        'shipperContact'
+                );
+            });
+        }
+
+        if (destLocation) {
+            destLocation.addEventListener('change', async () => {
+                await calcDistanceIfReady();
+                await populateAddressFields();
+                await fetchAndDisplayLocationContact(
+                        destAccount.value,
+                        destLocation.value,
+                        'consigneeContact'
+                );
+            });
+        }
+        // Autocomplete functionality
+        // Autocomplete functionality
+        function setupAutocomplete(input) {
+            // Prevent duplicate listeners
+            if (input._autocompleteInitialized) return;
+            input._autocompleteInitialized = true;
+
+            const grp = input.dataset.group;
+            if (!grp) return;
+
+            const listEl = document.getElementById(grp + '-list');
+            if (!listEl) return;
+
+            // Style the suggestions container
+            listEl.style.cssText = `
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-top: 2px;
+        display: none;
+    `;
+
+            let suggestions = [], active = -1;
+
+            input.addEventListener('input', () => {
+                clearTimeout(input._timer);
+                if (input.value.trim().length < 3) {
+                    listEl.style.display = 'none';
+                    return;
+                }
+                input._timer = setTimeout(fetchSuggestions, 300);
+            });
+
+            input.addEventListener('focus', () => {
+                if (suggestions.length > 0) {
+                    listEl.style.display = 'block';
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    listEl.style.display = 'none';
+                }, 200);
+            });
+
+            input.addEventListener('keydown', e => {
+                const items = listEl.querySelectorAll('.suggestion-item');
+                if (!items.length) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    active = Math.min(active + 1, items.length - 1);
+                    highlight();
+                }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    active = Math.max(active - 1, 0);
+                    highlight();
+                }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (active > -1) pick(items[active]);
+                }
+
+                function highlight() {
+                    items.forEach(i => i.classList.remove('active'));
+                    items[active]?.classList.add('active');
+                    items[active]?.scrollIntoView({ block: 'nearest' });
+                }
+            });
+
+            listEl.addEventListener('click', e => {
+                const item = e.target.closest('.suggestion-item');
+                if (item) pick(item);
+            });
+
+            async function fetchSuggestions() {
+                try {
+                    const res = await fetch(`/api/address/autocomplete?input=${encodeURIComponent(input.value)}`);
+                    if (!res.ok) throw new Error('Autocomplete fetch failed');
+
+                    suggestions = await res.json();
+                    active = -1;
+
+                    if (suggestions.length > 0) {
+                        listEl.innerHTML = suggestions
+                                .map((p, i) => `
+                        <div class="suggestion-item" data-idx="${i}">
+                            <div class="suggestion-main">${p.description}</div>
+                            ${p.secondary_text ? `<div class="suggestion-secondary">${p.secondary_text}</div>` : ''}
+                        </div>
+                    `)
+                                .join('');
+                        listEl.style.display = 'block';
+
+                        // Add hover styles
+                        const items = listEl.querySelectorAll('.suggestion-item');
+                        items.forEach(item => {
+                            item.style.cssText = `
+                        padding: 8px 12px;
+                        cursor: pointer;
+                        border-bottom: 1px solid #eee;
+                    `;
+                            item.addEventListener('mouseenter', () => {
+                                item.style.backgroundColor = '#f5f5f5';
+                            });
+                            item.addEventListener('mouseleave', () => {
+                                item.style.backgroundColor = '';
+                            });
+                        });
+                    } else {
+                        listEl.style.display = 'none';
+                    }
+                } catch (err) {
+                    console.error('Autocomplete fetch failed:', err);
+                    listEl.style.display = 'none';
+                }
+            }
+
+            async function pick(item) {
+                const idx = +item.dataset.idx;
+                const choice = suggestions[idx];
+                input.value = choice.description;
+                listEl.style.display = 'none';
+
+                const placeId = choice.place_id || choice.placeId;
+                if (!placeId) {
+                    console.error('❌ Missing place_id in choice:', choice);
+                    return;
+                }
+
+                try {
+                    const resp = await fetch(`/api/address/details?placeId=${placeId}`);
+                    if (!resp.ok) throw new Error('Address details fetch failed');
+
+                    const comps = await resp.json();
+                    fillFields(grp, comps, choice.description);
+                    calcDistanceIfReady();
+                } catch (err) {
+                    console.error('Address details fetch failed:', err);
+                }
+            }
+
+            function fillFields(grp, comps, desc) {
+                const addressEl = document.getElementById(`${grp}-address`);
+                const cityEl = document.getElementById(`${grp}-city`);
+                const stateEl = document.getElementById(`${grp}-state`);
+                const zipEl = document.getElementById(`${grp}-zip`);
+                const countryEl = document.getElementById(`${grp}-country`);
+
+                if (addressEl) addressEl.value = desc || comps.street || '';
+                if (cityEl) cityEl.value = comps.city || '';
+                if (stateEl) stateEl.value = comps.state || '';
+                if (zipEl) zipEl.value = comps.zip || '';
+                if (countryEl) countryEl.value = comps.country || '';
+            }
+        }
+
+        // Event listeners setup
+        function setupEventListeners() {
+            // Address input listeners for distance calculation
+
+
+            // Account dropdown change listeners
+            if (originAccount) {
+                originAccount.addEventListener('change', function() {
+                    loadLocationsForAccount(this.value, originLocation);
+                });
+            }
+
+            if (destAccount) {
+                destAccount.addEventListener('change', function() {
+                    loadLocationsForAccount(this.value, destLocation);
+                });
+            }
+
+            // Location select triggers - NOW WITH ADDRESS POPULATION
+            [originLocation, destLocation].forEach(el => {
+                if (el) {
+                    el.addEventListener('change', async () => {
+                        await calcDistanceIfReady();
+                        // Populate address fields whenever location changes
+                        await populateAddressFields();
+                    });
+                }
+            });
+
+            // Mode switch listeners
+            const accountModeEl = document.getElementById('addressMode-account');
+            const manualModeEl = document.getElementById('addressMode-manual');
+
+            if (accountModeEl) {
+                accountModeEl.addEventListener('change', () => {
+                    if (accountModeEl.checked) {
+                        showAddresses('account');
+                        if (distanceField) distanceField.value = '';
+                        calcDistanceIfReady();
+                    }
+                });
+            }
+
+            if (manualModeEl) {
+                manualModeEl.addEventListener('change', () => {
+                    if (manualModeEl.checked) {
+                        showAddresses('manual');
+                        if (distanceField) distanceField.value = '';
+                        calcDistanceIfReady();
+                    }
+                });
+            }
+        }
+
+        // Stepper functionality
+        function setupStepper() {
+            const sections = Array.from(form.querySelectorAll('fieldset'));
+            if (sections.length === 0) return;
+
+            let currentStep = 0;
+
+            function showSection(i) {
+                if (i < 0 || i >= sections.length) return;
+                sections[currentStep].style.display = 'none';
+                currentStep = i;
+                sections[currentStep].style.display = '';
+                if (stepIndicator) stepIndicator.textContent = (currentStep + 1);
+                if (progressBar) progressBar.style.width = `${100 * (currentStep + 1) / sections.length}%`;
+            }
+
+            sections.forEach((fs, i) => {
+                fs.style.display = 'none';
+
+                // Remove existing step buttons to prevent duplicates
+                const existingNav = fs.querySelector('.step-buttons');
+                if (existingNav) existingNav.remove();
+
+                const nav = document.createElement('div');
+                nav.className = 'step-buttons';
+
+                // Back button (only if not first step)
+                if (i > 0) {
+                    const back = document.createElement('button');
+                    back.type = 'button';
+                    back.textContent = 'Back';
+                    back.className = 'btn btn-outline-secondary me-2';
+                    back.addEventListener('click', () => showSection(i - 1));
+                    nav.appendChild(back);
+                }
+
+                // Next/Submit button
+
+            });
+
+            showSection(0);
+        }
+
+        // Form submission with conflict prevention
+        if (form && !form._submitHandlerAttached) {
+            form._submitHandlerAttached = true;
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+
+                console.log('🚀 Form submission started...');
+
+                // CRITICAL: Populate address fields before creating FormData
+                const addressPopulated = await populateAddressFields();
+                if (!addressPopulated) {
+                    console.error('❌ Failed to populate address fields');
+                    alert('Unable to retrieve address information. Please check your selections.');
+                    return;
+                }
+
+                // Create FormData AFTER populating hidden fields
+                const fd = new FormData(form);
+
+                // Debug FormData
+                console.group('📦 New Shipment FormData');
+                for (let [key, val] of fd.entries()) {
+                    console.log(key, ':', val);
+                }
+                console.groupEnd();
+
+                // Submit form
+                const body = new URLSearchParams(fd);
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body
+                    });
+
+                    if (!res.ok) throw await res.json();
+                    const data = await res.json();
+
+                    form.innerHTML = `
+                    <div class="p-4 text-center">
+                        <h4>Shipment Created!</h4>
+                        <p><strong>${data.shipmentNumber}</strong> saved.</p>
+                        <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>`;
+                } catch (err) {
+                    const msg = err.error || 'Error saving shipment';
+                    let alert = form.querySelector('.alert-danger');
+                    if (!alert) {
+                        form.insertAdjacentHTML('afterbegin', `<div class="alert alert-danger">${msg}</div>`);
+                    } else {
+                        alert.textContent = msg;
+                    }
+                }
+            });
+        }
+
+        // Modal show event with conflict prevention
+        if (modal && !modal._showHandlerAttached) {
+            modal._showHandlerAttached = true;
+            modal.addEventListener('shown.bs.modal', () => {
+                const mode = document.querySelector('input[name="addressMode"]:checked')?.value || 'account';
+                showAddresses(mode);
+                loadAccounts();
+                document.querySelectorAll('.address-input').forEach(setupAutocomplete);
+            });
+        }
+
+        // Initialize components
+        setupEventListeners();
+        setupStepper();
+
+        // Set initial address mode if modal is already visible
+        const initialMode = document.querySelector('input[name="addressMode"]:checked')?.value;
+        if (initialMode) {
+            showAddresses(initialMode);
+        }
+
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('newShipmentForm');
+        const sections = Array.from(form.querySelectorAll('fieldset'));
+        const stepNavContainer = document.getElementById('stepNavContainer');
+        let currentStep = 0;
+
+        function renderFooterButtons() {
+            stepNavContainer.innerHTML = '';
+
+            if (currentStep > 0) {
+                const backBtn = document.createElement('button');
+                backBtn.type = 'button';
+                backBtn.className = 'btn btn-outline-secondary';
+                backBtn.style.marginRight = '15px'
+                backBtn.textContent = 'Back';
+                backBtn.onclick = () => showSection(currentStep - 1);
+                stepNavContainer.appendChild(backBtn);
+            }
+
+            if (currentStep < sections.length - 1) {
+                const nextBtn = document.createElement('button');
+                nextBtn.type = 'button';
+                nextBtn.className = 'btn btn-primary ms-auto';
+                nextBtn.textContent = 'Next';
+                nextBtn.onclick = () => {
+                    if (sections[currentStep].checkValidity()) {
+                        form.classList.remove('was-validated');
+                        showSection(currentStep + 1);
+                    } else {
+                        form.classList.add('was-validated');
+                    }
+                };
+                stepNavContainer.appendChild(nextBtn);
+            } else {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.type = 'button';
+                cancelBtn.className = 'btn btn-outline-secondary';
+                cancelBtn.setAttribute('data-bs-dismiss', 'modal');
+                cancelBtn.textContent = 'Cancel';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.type = 'submit';
+                submitBtn.className = 'btn btn-primary ms-auto';
+                submitBtn.textContent = 'Create Shipment';
+
+                stepNavContainer.appendChild(cancelBtn);
+                stepNavContainer.appendChild(submitBtn);
+            }
+        }
+
+        function showSection(index) {
+            sections.forEach((s, i) => {
+                s.style.display = i === index ? '' : 'none';
+            });
+            currentStep = index;
+            renderFooterButtons();
+            document.getElementById('stepIndicator').textContent = index + 1;
+            document.getElementById('progressBar').style.width = ((index + 1) / sections.length) * 100 + '%';
+        }
+
+        showSection(0); // Initialize
+    });
+</script>
+<script>
+    document.getElementById("newShipmentButton").addEventListener("click", function () {
+        const modal = new bootstrap.Modal(document.getElementById("newShipmentModal"));
+        modal.show();
+    });
+</script>

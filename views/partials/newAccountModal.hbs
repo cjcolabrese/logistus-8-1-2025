@@ -1,0 +1,317 @@
+<div class="modal fade" id="newAccountModal" tabindex="-1" aria-labelledby="accountCreationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="accountCreationModalLabel">Create New Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Progress Bar -->
+                <div class="progress mb-4">
+                    <div id="formProgress" class="progress-bar" role="progressbar" style="width: 20%;"
+                         aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">Step 1 of 5
+                    </div>
+                </div>
+                <!-- Form Steps -->
+                <form id="accountForm">
+                    <!-- Step 1: Basic Information -->
+                    <div class="step step-1">
+                        <h6 class="mb-3">Basic Account Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="accountName" class="form-label">Account Name*</label>
+                                <input type="text" class="form-control" id="accountName" name="accountName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="companyWebsite" class="form-label">Company Website</label>
+                                <input type="url" class="form-control" id="companyWebsite" name="companyWebsite">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="taxId" class="form-label">Tax ID</label>
+                                <input type="text" class="form-control" id="taxId" name="taxId">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="paymentTerms" class="form-label">Payment Terms</label>
+                                <select class="form-select" id="paymentTerms" name="paymentTerms">
+                                    <option value="Net 30" selected>Net 30</option>
+                                    <option value="Prepaid">Prepaid</option>
+                                    <option value="Net 15">Net 15</option>
+                                    <option value="Net 45">Net 45</option>
+                                    <option value="Net 60">Net 60</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="creditLimit" class="form-label">Credit Limit ($)</label>
+                                <input type="number" class="form-control" id="creditLimit" name="creditLimit" min="0"
+                                       value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="currency" class="form-label">Currency</label>
+                                <select class="form-select" id="currency" name="currency">
+                                    <option value="USD" selected>USD</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="tags" name="tags"
+                                       placeholder="Comma separated tags">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Step 2: Operations Contact -->
+                    <div class="step step-2 d-none">
+                        <h6 class="mb-3">Operations Contact Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="opsFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="opsFirstName"
+                                       name="operationsContact.firstName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="opsLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="opsLastName"
+                                       name="operationsContact.lastName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="opsEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="opsEmail" name="operationsContact.email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="opsPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="opsPhone" name="operationsContact.phone">
+                            </div>
+                            <div class="col-12">
+                                <label for="opsAddress" class="form-label">Address*</label>
+                                <input type="text" class="form-control" id="opsAddress" name="operationsContact.address"
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="opsCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="opsCity" name="operationsContact.city">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="opsState" class="form-label">State</label>
+                                <input type="text" class="form-control" id="opsState" name="operationsContact.state">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="opsZip" class="form-label">Zip</label>
+                                <input type="text" class="form-control" id="opsZip" name="operationsContact.zip">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="opsCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="opsCountry" name="operationsContact.country"
+                                       value="USA">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Step 3: Billing Contact -->
+                    <div class="step step-3 d-none">
+                        <h6 class="mb-3">Billing Contact Information</h6>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="sameAsOps"
+                                   onchange="copyOpsToBilling()">
+                            <label class="form-check-label" for="sameAsOps">Same as Operations Contact</label>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="billFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="billFirstName"
+                                       name="billingContact.firstName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="billLastName"
+                                       name="billingContact.lastName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="billEmail" name="billingContact.email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="billPhone" name="billingContact.phone">
+                            </div>
+                            <div class="col-12">
+                                <label for="billAddress" class="form-label">Address*</label>
+                                <input type="text" class="form-control" id="billAddress" name="billingContact.address"
+                                       required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="billCity" name="billingContact.city">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billState" class="form-label">State</label>
+                                <input type="text" class="form-control" id="billState" name="billingContact.state">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="billZip" class="form-label">Zip</label>
+                                <input type="text" class="form-control" id="billZip" name="billingContact.zip">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="billCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="billCountry" name="billingContact.country"
+                                       value="USA">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Step 4: Locations -->
+                    <div class="step step-4 d-none">
+                        <h6 class="mb-3">Locations</h6>
+                        <p class="text-muted mb-3">Add at least one location (you can add more later)</p>
+                        <div id="locationFields">
+                            <div class="location-entry card mb-3 p-3">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label for="locationName" class="form-label">Location Name</label>
+                                        <input type="text" class="form-control" id="locationName"
+                                               name="locations[0].name">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="locationAddress" class="form-label">Address</label>
+                                        <input type="text" class="form-control" id="locationAddress"
+                                               name="locations[0].address">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="locationCity" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="locationCity"
+                                               name="locations[0].city">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="locationState" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="locationState"
+                                               name="locations[0].state">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="locationZip" class="form-label">Zip</label>
+                                        <input type="text" class="form-control" id="locationZip"
+                                               name="locations[0].zip">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="locationCountry" class="form-label">Country</label>
+                                        <input type="text" class="form-control" id="locationCountry"
+                                               name="locations[0].country" value="USA">
+                                    </div>
+                                    <h6 class="mt-3">Location Contact</h6>
+                                    <div class="col-md-6">
+                                        <label for="locationContactName" class="form-label">Contact Name</label>
+                                        <input type="text" class="form-control" id="locationContactName"
+                                               name="locations[0].locationContact.name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="locationContactEmail" class="form-label">Contact Email</label>
+                                        <input type="email" class="form-control" id="locationContactEmail"
+                                               name="locations[0].locationContact.email">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="locationContactPhone" class="form-label">Contact Phone</label>
+                                        <input type="tel" class="form-control" id="locationContactPhone"
+                                               name="locations[0].locationContact.phoneNumber">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addLocationField()">
+                            <i class="bi bi-plus"></i> Add Another Location
+                        </button>
+                    </div>
+                    <!-- Step 5: Accessorial Pricing -->
+                    <div class="step step-5 d-none">
+                        <h6 class="mb-3">Accessorial Pricing</h6>
+                        <p class="text-muted mb-3">Set default accessorial charges for this account</p>
+                        <div class="card mb-3 p-3">
+                            <h6 class="mb-3">Shipment Accessorials</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="hazmat" class="form-label">Hazmat ($)</label>
+                                    <input type="number" class="form-control" id="hazmat"
+                                           name="accessorialPricing.shipment.hazmat" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="overdimension" class="form-label">Overdimension ($)</label>
+                                    <input type="number" class="form-control" id="overdimension"
+                                           name="accessorialPricing.shipment.overdimension" min="0" step="0.01"
+                                           value="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="freezeProtection" class="form-label">Freeze Protection ($)</label>
+                                    <input type="number" class="form-control" id="freezeProtection"
+                                           name="accessorialPricing.shipment.freezeProtection" min="0" step="0.01"
+                                           value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3 p-3">
+                            <h6 class="mb-3">Pickup Accessorials</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="pickupInside" class="form-label">Inside Pickup ($)</label>
+                                    <input type="number" class="form-control" id="pickupInside"
+                                           name="accessorialPricing.pickup.inside" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pickupLiftgate" class="form-label">Liftgate ($)</label>
+                                    <input type="number" class="form-control" id="pickupLiftgate"
+                                           name="accessorialPricing.pickup.liftgate" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pickupLimitedAccess" class="form-label">Limited Access ($)</label>
+                                    <input type="number" class="form-control" id="pickupLimitedAccess"
+                                           name="accessorialPricing.pickup.limitedAccess" min="0" step="0.01" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3 p-3">
+                            <h6 class="mb-3">Delivery Accessorials</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="deliveryInside" class="form-label">Inside Delivery ($)</label>
+                                    <input type="number" class="form-control" id="deliveryInside"
+                                           name="accessorialPricing.delivery.inside" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="deliveryLiftgate" class="form-label">Liftgate ($)</label>
+                                    <input type="number" class="form-control" id="deliveryLiftgate"
+                                           name="accessorialPricing.delivery.liftgate" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="deliveryAppointment" class="form-label">Appointment ($)</label>
+                                    <input type="number" class="form-control" id="deliveryAppointment"
+                                           name="accessorialPricing.delivery.appointment" min="0" step="0.01" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-3">
+                            <h6 class="mb-3">Other Fees</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="detentionPerHr" class="form-label">Detention (per hour $)</label>
+                                    <input type="number" class="form-control" id="detentionPerHr"
+                                           name="accessorialPricing.other.detentionPerHr" min="0" step="0.01" value="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="redelivery" class="form-label">Redelivery ($)</label>
+                                    <input type="number" class="form-control" id="redelivery"
+                                           name="accessorialPricing.other.redelivery" min="0" step="0.01" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="prevBtn" onclick="prevStep()" disabled>
+                    Previous
+                </button>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+    </div>
+</div>

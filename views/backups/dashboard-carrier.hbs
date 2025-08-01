@@ -1,0 +1,1864 @@
+{{> carrierNavBar}}
+{{>sidebar}}
+
+
+<div class="content">
+    <div id="dashboardContent" class="content-section" style="padding: 20px;">
+
+        <div class="card shadow-sm mb-4" >
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="padding: 15px;">
+                <h5 class="mb-0">Active Shipments</h5>
+                <span class="badge bg-light text-dark" id="shipment-count">{{activeShipments.length}} total</span>
+            </div>
+
+            <!-- Advanced Filters Section -->
+            <div class="card-body border-bottom bg-light">
+                <div class="row g-3 align-items-end">
+                    <!-- Search Input -->
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1" style="padding-left: 10px;">Search
+                            Shipments</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="material-symbols-outlined"
+                                                              style="font-size: 18px;">search</i></span>
+                            <input type="text" id="search-filter" class="form-control"
+                                   placeholder="Shipment #, origin, destination...">
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Status</label>
+                        <select id="status-filter" class="form-select form-select-sm">
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Booked">Booked</option>
+                            <option value="In Transit">In Transit</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Invoiced">Invoiced</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Equipment Type Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Equipment</label>
+                        <select id="equipment-filter" class="form-select form-select-sm">
+                            <option value="">All Equipment</option>
+                            <option value="Dry Van">Dry Van</option>
+                            <option value="Reefer">Reefer</option>
+                            <option value="Flatbed">Flatbed</option>
+                            <option value="Power Only">Power Only</option>
+                            <option value="Step Deck">Step Deck</option>
+                            <option value="Conestoga">Conestoga</option>
+                            <option value="Container">Container</option>
+                            <option value="Box Truck">Box Truck</option>
+                            <option value="Cargo Van">Cargo Van</option>
+                            <option value="Gooseneck">Gooseneck</option>
+                            <option value="Hot Shot">Hot Shot</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Pickup Date</label>
+                        <input type="date" id="date-from-filter" class="form-control form-control-sm"
+                               placeholder="From">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">To Date</label>
+                        <input type="date" id="date-to-filter" class="form-control form-control-sm" placeholder="To">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-md-1">
+                        <div class="d-flex gap-1">
+                            <button type="button" id="clear-filters" class="btn btn-outline-secondary btn-sm"
+                                    title="Clear all filters">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">clear</i>
+                            </button>
+                            <button type="button" id="export-filtered" class="btn btn-outline-primary btn-sm"
+                                    title="Export filtered results">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">download</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="mt-3" style="margin: 10px;">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <!--                        <span class="small text-muted" style="margin-left: 20px">Quick filters:</span>-->
+                        <button type="button" class="btn btn-outline-success btn-sm quick-filter" data-filter="status"
+                                data-value="Available">
+                            Available Only
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm quick-filter" data-filter="status"
+                                data-value="Booked">
+                            Booked Only
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter="date"
+                                data-value="today">
+                            Today's Pickups
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm quick-filter" data-filter="date"
+                                data-value="week">
+                            This Week
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm quick-filter"
+                                data-filter="equipment" data-value="Dry Van">
+                            Dry Van Only
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body table-responsive">
+                {{#if activeShipments.length}}
+                    <table class="table table-hover align-middle" id="shipmentsTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="sortable" data-sort="shipmentNumber">
+                                Shipment #
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="origin">
+                                Origin
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="destination">
+                                Destination
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="distance">
+                                Distance
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="pickupDate">
+                                Pickup
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="deliveryDate">
+                                Delivery
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="rate">
+                                Rate
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="equipmentType">
+                                Equipment
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="weight">
+                                Weight
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="status">
+                                Status
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="shipments-tbody">
+                        {{#each activeShipments}}
+                            <tr class="shipment-row" data-id="{{this._id}}" data-context="active-shipment"
+                                data-shipment-number="{{this.shipmentNumber}}"
+                                data-origin="{{this.origin.city}}, {{this.origin.state}}"
+                                data-destination="{{this.destination.city}}, {{this.destination.state}}"
+                                data-status="{{this.status}}"
+                                data-equipment="{{this.equipmentType}}"
+                                data-pickup="{{this.pickupDate}}"
+                                data-delivery="{{this.deliveryDate}}"
+                                data-rate="{{this.rate.amount}}"
+                                data-distance="{{this.distance}}"
+                                data-weight="{{this.weight}}">
+                                <td class="fw-medium">{{this.shipmentNumber}}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.origin.city}}, {{this.origin.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.origin.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.destination.city}}
+                                                , {{this.destination.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.destination.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{this.distance}} mi
+                                </td>
+                                <td>
+
+                                    {{formatDate this.pickupDate}}
+
+                                </td>
+                                <td>
+
+                                    {{formatDate this.deliveryDate}}
+
+
+                                </td>
+                                <td>
+                                    {{#if this.baseRate.amount}}
+                                        <div class="fw-medium">${{formatCurrency this.baseRate.amount}}</div>
+                                        <small class="text-muted">
+                                            {{#if this.ratePerMile}}
+                                                ${{formatCurrency this.ratePerMile}}/mi
+                                            {{else}}
+                                                —
+                                            {{/if}}
+                                        </small>
+                                    {{else}}
+                                        <em class="text-muted">N/A</em>
+                                    {{/if}}
+                                </td>
+
+
+                                <td>
+                                    <span class="badge bg-secondary">{{this.equipmentType}}</span>
+                                </td>
+                                <td>
+                                    {{formatNumber this.weight}} lbs
+                                </td>
+                                <td>
+                                    {{this.status}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+
+                    <!-- Results Summary -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="text-muted small">
+                            Showing <span id="visible-count">{{activeShipments.length}}</span> of <span
+                                id="total-count">{{activeShipments.length}}</span> shipments
+                        </div>
+                        <div class="d-flex gap-2">
+
+                        </div>
+                    </div>
+                {{else}}
+                    <div class="text-center py-5">
+                        <i class="material-symbols-outlined text-muted mb-3" style="font-size: 64px;">local_shipping</i>
+                        <h6 class="text-muted">No shipments posted yet</h6>
+                        <p class="text-muted mb-3">Get started by creating your first shipment</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newShipmentModal">
+                            <i class="material-symbols-outlined me-2">add</i>
+                            Create First Shipment
+                        </button>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+
+
+
+    </div>
+    <div id="freightContent" class="content-section" style="padding: 20px;">
+        <div class="card shadow-sm mb-4" >
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="padding: 15px;">
+                <h5 class="mb-0">Available Shipments</h5>
+                <span class="badge bg-light text-dark" id="shipment-count">{{postedShipments.length}} total</span>
+            </div>
+
+            <!-- Advanced Filters Section -->
+            <div class="card-body border-bottom bg-light">
+                <div class="row g-3 align-items-end">
+                    <!-- Search Input -->
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted mb-1" style="padding-left: 10px;">Search
+                            Shipments</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="material-symbols-outlined"
+                                                              style="font-size: 18px;">search</i></span>
+                            <input type="text" id="search-filter" class="form-control"
+                                   placeholder="Shipment #, origin, destination...">
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Status</label>
+                        <select id="status-filter" class="form-select form-select-sm">
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Booked">Booked</option>
+                            <option value="In Transit">In Transit</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Invoiced">Invoiced</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Equipment Type Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Equipment</label>
+                        <select id="equipment-filter" class="form-select form-select-sm">
+                            <option value="">All Equipment</option>
+                            <option value="Dry Van">Dry Van</option>
+                            <option value="Reefer">Reefer</option>
+                            <option value="Flatbed">Flatbed</option>
+                            <option value="Power Only">Power Only</option>
+                            <option value="Step Deck">Step Deck</option>
+                            <option value="Conestoga">Conestoga</option>
+                            <option value="Container">Container</option>
+                            <option value="Box Truck">Box Truck</option>
+                            <option value="Cargo Van">Cargo Van</option>
+                            <option value="Gooseneck">Gooseneck</option>
+                            <option value="Hot Shot">Hot Shot</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">Pickup Date</label>
+                        <input type="date" id="date-from-filter" class="form-control form-control-sm"
+                               placeholder="From">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted mb-1">To Date</label>
+                        <input type="date" id="date-to-filter" class="form-control form-control-sm" placeholder="To">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-md-1">
+                        <div class="d-flex gap-1">
+                            <button type="button" id="clear-filters" class="btn btn-outline-secondary btn-sm"
+                                    title="Clear all filters">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">clear</i>
+                            </button>
+                            <button type="button" id="export-filtered" class="btn btn-outline-primary btn-sm"
+                                    title="Export filtered results">
+                                <i class="material-symbols-outlined" style="font-size: 16px;">download</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="mt-3" style="margin: 10px;">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <!--                        <span class="small text-muted" style="margin-left: 20px">Quick filters:</span>-->
+                        <button type="button" class="btn btn-outline-success btn-sm quick-filter" data-filter="status"
+                                data-value="Available">
+                            Available Only
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm quick-filter" data-filter="status"
+                                data-value="Booked">
+                            Booked Only
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter="date"
+                                data-value="today">
+                            Today's Pickups
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm quick-filter" data-filter="date"
+                                data-value="week">
+                            This Week
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm quick-filter"
+                                data-filter="equipment" data-value="Dry Van">
+                            Dry Van Only
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body table-responsive">
+                {{#if postedShipments.length}}
+                    <table class="table table-hover align-middle" id="shipmentsTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="sortable" data-sort="shipmentNumber">
+                                Shipment #
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="origin">
+                                Origin
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="destination">
+                                Destination
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="distance">
+                                Distance
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="pickupDate">
+                                Pickup
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="deliveryDate">
+                                Delivery
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="rate">
+                                Rate
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="equipmentType">
+                                Equipment
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="weight">
+                                Weight
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                            <th scope="col" class="sortable" data-sort="status">
+                                Status
+                                <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="shipments-tbody">
+                        {{#each postedShipments}}
+                            <tr class="shipment-row" data-id="{{this._id}}" data-context="posted-shipment"
+                                data-shipment-number="{{this.shipmentNumber}}"
+                                data-origin="{{this.origin.city}}, {{this.origin.state}}"
+                                data-destination="{{this.destination.city}}, {{this.destination.state}}"
+                                data-status="{{this.status}}"
+                                data-equipment="{{this.equipmentType}}"
+                                data-pickup="{{this.pickupDate}}"
+                                data-delivery="{{this.deliveryDate}}"
+                                data-rate="{{this.rate.amount}}"
+                                data-distance="{{this.distance}}"
+                                data-weight="{{this.weight}}">
+                                <td class="fw-medium">{{this.shipmentNumber}}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.origin.city}}, {{this.origin.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.origin.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+
+                                        <div>
+                                            <div class="fw-medium">{{this.destination.city}}
+                                                , {{this.destination.state}}</div>
+                                            <!--                                            <small class="text-muted">{{this.destination.address}}</small>-->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{this.distance}} mi
+                                </td>
+                                <td>
+
+                                    {{formatDate this.pickupDate}}
+
+
+                                </td>
+                                <td>
+
+                                    {{formatDate this.deliveryDate}}
+
+
+                                </td>
+                                <td>
+                                    {{#if this.baseRate.amount}}
+                                        <div class="fw-medium">${{formatCurrency this.baseRate.amount}}</div>
+                                        <small class="text-muted">
+                                            {{#if this.ratePerMile}}
+                                                ${{formatCurrency this.ratePerMile}}/mi
+                                            {{else}}
+                                                —
+                                            {{/if}}
+                                        </small>
+                                    {{else}}
+                                        <em class="text-muted">N/A</em>
+                                    {{/if}}
+                                </td>
+
+
+                                <td>
+                                    <span class="badge bg-secondary">{{this.equipmentType}}</span>
+                                </td>
+                                <td>
+                                    {{formatNumber this.weight}} lbs
+                                </td>
+                                <td>
+                                    {{this.status}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+
+                    <!-- Results Summary -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <div class="text-muted small">
+                            Showing <span id="visible-count">{{postedShipments.length}}</span> of <span
+                                id="total-count">{{postedShipments.length}}</span> shipments
+                        </div>
+                        <div class="d-flex gap-2">
+
+                        </div>
+                    </div>
+                {{else}}
+                    <div class="text-center py-5">
+                        <i class="material-symbols-outlined text-muted mb-3" style="font-size: 64px;">local_shipping</i>
+                        <h6 class="text-muted">No shipments posted yet</h6>
+                        <p class="text-muted mb-3">Get started by creating your first shipment</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newShipmentModal">
+                            <i class="material-symbols-outlined me-2">add</i>
+                            Create First Shipment
+                        </button>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="shipmentDetailsModal" tabindex="-1" aria-labelledby="shipmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0">
+            <!-- Modal Header -->
+            <div class="modal-header position-relative bg-gradient-primary text-white pb-4">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <!-- Left side: Shipment title and route -->
+                        <div>
+                            <h5 class="modal-title mb-1" id="shipmentDetailsModalLabel">
+                                <span id="modal-shipment-number" class="me-2"></span>
+                                <span id="modal-status" data-editable="status">Booked</span>
+                            </h5>
+                            <div class="text-white-50 small" id="modal-route">
+                                <span id="modal-origin"></span>
+                                <i class="material-symbols-outlined mx-2" style="font-size:1rem;">arrow_right_alt</i>
+                                <span id="modal-destination"></span>
+                            </div>
+                        </div>
+
+                        <!-- Right side: Status and close button -->
+                        <div class="d-flex flex-column align-items-end">
+
+                            <button type="button" class="btn-close mt-2" id="close-modal-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="shipment-progress mt-3">
+                        <div class="progress-steps">
+                            <div class="step booked">
+                                <div class="step-icon"><i class="material-symbols-outlined">assignment</i></div>
+                                <div class="step-label">Booked</div>
+                            </div>
+                            <div class="step in-transit">
+                                <div class="step-icon"><i class="material-symbols-outlined">local_shipping</i></div>
+                                <div class="step-label">In Transit</div>
+                            </div>
+                            <div class="step delivered">
+                                <div class="step-icon"><i class="material-symbols-outlined">location_on</i></div>
+                                <div class="step-label">Delivered</div>
+                            </div>
+                            <div class="step invoiced">
+                                <div class="step-icon"><i class="material-symbols-outlined">receipt</i></div>
+                                <div class="step-label">Invoiced</div>
+                            </div>
+                            <div class="step paid">
+                                <div class="step-icon"><i class="material-symbols-outlined">payments</i></div>
+                                <div class="step-label">Paid</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal Body -->
+            <div class="modal-body pt-4">
+                <!-- Row 1: Shipment Overview & Financial Summary -->
+                <div class="row g-4 align-items-stretch mb-4">
+                    <!-- Shipment Overview -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h2 class="fs-4">Shipment Overview</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Example block -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Shipment Type</label>
+                                        <div id="modal-shipment-type" data-editable="shipmentType" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Equipment Type</label>
+                                        <div id="modal-equipment" data-editable="equipmentType" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Commodity</label>
+                                        <div id="modal-commodity" data-editable="commodity" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Quantity</label>
+                                        <div id="modal-quantity" data-editable="quantity" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Weight (lbs)</label>
+                                        <div id="modal-weight" data-editable="weight" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Pallets</label>
+                                        <div id="modal-pallets" data-editable="pallets" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Dimensions</label>
+                                        <div id="modal-dimensions" data-editable="dimensions" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Hazmat Class</label>
+                                        <div id="modal-hazmat-class" data-editable="hazmatClass" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Temp Control</label>
+                                        <div id="modal-temperature-control" data-editable="temperatureControl" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Distance (mi)</label>
+                                        <div id="modal-distance" data-editable="distance" class="fs-6 text-body-secondary"></div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted fw-semibold small text-uppercase mb-1">Rate per Mile</label>
+                                        <div id="modal-rate-per-mile" data-editable="ratePerMile" class="fs-6 text-body-secondary"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Financial Summary -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h2 class="fs-4">Financial Summary</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <label class="d-block text-muted small mb-1">Total Rate</label>
+                                        <h4 class="mb-0 text-primary" id="modal-total-rate" data-editable="totalRate"></h4>
+                                    </div>
+                                    <div class="text-end">
+                                        <label class="d-block text-muted small mb-1">Payment Status</label>
+                                        <span class="badge" id="modal-payment-status" data-editable="paymentStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="bg-light p-3 rounded mb-3">
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Base Rate</span>
+                                        <span id="modal-base-rate" data-editable="baseRate.amount" type="currency"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Accessorials</span>
+                                        <span id="accessorial-total" data-editable="accessorials-total" type="currency">$</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-semibold">
+                                        <span>Total</span>
+                                        <span id="total-rate" data-editable="total-rate" type="currency">$</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-1">Payment Terms</label>
+                                    <div id="modal-payment-terms" data-editable="paymentTerms"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-1">Shipment Value</label>
+                                    <div id="modal-shipment-value" data-editable="shipmentValue"></div>
+                                </div>
+                                <div>
+                                    <label class="d-block text-muted small mb-1">Insurance Amount</label>
+                                    <div id="modal-insurance-amount" data-editable="insuranceAmount"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Route Details & Accessorials -->
+                <div class="row g-4 align-items-stretch mb-4">
+                    <!-- Route Details -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h2 class="fs-4">Route Details</h2>
+                            </div>
+                            <div class="card-body">
+                                <div id="map" style="height: 200px; width: 100%;"></div>
+                                <div class="row pt-4">
+                                    <div class="col-md-6 mb-4">
+                                        <h6 class="fw-semibold small mb-2">Pickup Location</h6>
+                                        <div class="text-muted small">
+                                            <span id="modal-origin-address" data-editable="origin.address"></span><br>
+                                            <span id="modal-origin-city" data-editable="origin.city"></span>
+                                            <span id="modal-origin-state" data-editable="origin.state"></span>
+                                            <span id="modal-origin-zip" data-editable="origin.zipcode"></span>
+                                        </div>
+                                        <div class="d-flex align-items-center text-muted small mt-2">
+                                            <i class="material-symbols-outlined me-1 text-info">calendar_today</i>
+                                            <span id="modal-pickup-date" data-editable="pickupDate"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <h6 class="fw-semibold small mb-2">Delivery Location</h6>
+                                        <div class="text-muted small">
+                                            <span id="modal-destination-address" data-editable="destination.address"></span><br>
+                                            <span id="modal-destination-city" data-editable="destination.city"></span>
+                                            <span id="modal-destination-state" data-editable="destination.state"></span>
+                                            <span id="modal-destination-zip" data-editable="destination.zipcode"></span>
+                                        </div>
+                                        <div class="d-flex align-items-center text-muted small mt-2">
+                                            <i class="material-symbols-outlined me-1 text-info">calendar_today</i>
+                                            <span id="modal-delivery-date" data-editable="deliveryDate"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accessorials -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h2 class="fs-4">Accessorials</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Shipment</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.shipment.hazmat" class="form-check-input me-1"> Hazmat</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.shipment.overdimension" class="form-check-input me-1"> Overdimension</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.shipment.prepaidAndAdd" class="form-check-input me-1"> Prepaid & Add</label></li>
+                                            <li><label><input type="checkbox" data-editable="accessorials.shipment.freezeProtection" class="form-check-input me-1"> Freeze Protection</label></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Pickup</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.inside" class="form-check-input me-1"> Inside</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.liftgate" class="form-check-input me-1"> Liftgate</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.limitedAccess" class="form-check-input me-1"> Limited Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.notifyConsignee" class="form-check-input me-1"> Notify Consignee</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.militaryAccess" class="form-check-input me-1"> Military Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.residential" class="form-check-input me-1"> Residential</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.pickup.airport" class="form-check-input me-1"> Airport</label></li>
+                                            <li><label><input type="checkbox" data-editable="accessorials.pickup.groceryWarehouse" class="form-check-input me-1"> Grocery Warehouse</label></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6 class="fw-semibold small mb-2">Delivery</h6>
+                                        <ul class="list-unstyled small">
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.inside" class="form-check-input me-1"> Inside</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.liftgate" class="form-check-input me-1"> Liftgate</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.limitedAccess" class="form-check-input me-1"> Limited Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.notifyConsignee" class="form-check-input me-1"> Notify Consignee</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.militaryAccess" class="form-check-input me-1"> Military Access</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.residential" class="form-check-input me-1"> Residential</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.appointment" class="form-check-input me-1"> Appointment</label></li>
+                                            <li class="mb-1"><label><input type="checkbox" data-editable="accessorials.delivery.airport" class="form-check-input me-1"> Airport</label></li>
+                                            <li><label><input type="checkbox" data-editable="accessorials.delivery.groceryWarehouse" class="form-check-input me-1"> Grocery Warehouse</label></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Contacts & Documents -->
+                <div class="row g-4 align-items-stretch mb-4">
+                    <!-- Contacts -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h6 class="fw-semibold mb-3">
+                                    <i class="material-symbols-outlined me-2">contacts</i>Contacts
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Shipper</h6>
+                                        <div class="mb-1" id="modal-shipper-name" data-editable="shipperContact.name"></div>
+                                        <div class="mb-1" id="modal-shipper-phone" data-editable="shipperContact.phone"></div>
+                                        <div id="modal-shipper-email" data-editable="shipperContact.email"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Consignee</h6>
+                                        <div class="mb-1" id="modal-consignee-name" data-editable="consigneeContact.name"></div>
+                                        <div class="mb-1" id="modal-consignee-phone" data-editable="consigneeContact.phone"></div>
+                                        <div id="modal-consignee-email" data-editable="consigneeContact.email"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <h6 class="fw-semibold small mb-2">Emergency Contact</h6>
+                                        <div class="mb-1" id="modal-emergency-name" data-editable="emergencyContact.name"></div>
+                                        <div class="mb-1" id="modal-emergency-phone" data-editable="emergencyContact.phone"></div>
+                                        <div id="modal-emergency-email" data-editable="emergencyContact.email"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents & Notes -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header px-4 pt-4">
+                                <h6 class="fw-semibold mb-3">
+                                    <i class="material-symbols-outlined me-2">description</i>Documents & Notes
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Special Instructions</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-special-instructions" data-editable="specialInstructions"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Notes</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-notes" data-editable="notes"></div>
+                                </div>
+                                <div>
+                                    <label class="d-block text-muted small mb-2">Tags</label>
+                                    <div id="modal-tags" data-editable="tags"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-2">Attachments</label>
+                                    <div class="d-flex flex-wrap gap-2" id="modal-attachments"></div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary d-flex align-items-center" data-bs-dismiss="modal" id="close-modal-btn">
+                    <i class="material-symbols-outlined me-1">close</i>
+                    <span>Close</span>
+                </button>
+                <button id="cancelEditBtn" class="btn btn-secondary d-none">Cancel</button>
+                <button id="saveShipmentBtn" class="btn btn-primary d-none">Save</button>
+                <button id="editShipmentBtn" class="btn btn-outline-primary">Edit</button>
+                <button class="btn btn-success" id="bookButton" type="button">Book</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsfTIPST3VlB6Wz4hnUalfzSxAPPd6Ct4&callback=onGoogleMapsReady"></script>
+<script>
+    function onGoogleMapsReady() {
+        // Optional preload hook
+    }
+
+    function initMapWithRoute(origin, destination) {
+        if (!window.google || !google.maps) {
+            console.error("Google Maps not loaded");
+            return;
+        }
+
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: false,
+            preserveViewport: false,
+        });
+
+        const request = {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        directionsService.route(request, function (result, status) {
+            if (status === "OK") {
+                directionsRenderer.setDirections(result);
+            } else {
+                console.error("Could not display route due to:", status);
+            }
+        });
+    }
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Global variables
+        let lastShipmentData = null;
+        let currentShipmentId = null;
+        const shipmentDetailsModal = new bootstrap.Modal(document.getElementById('shipmentDetailsModal'));
+
+        // Helper functions
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return 'N/A';
+            return '$' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        function getStatusColor(status) {
+            const statusColors = {
+                'Available': 'success',
+                'Booked': 'warning',
+                'In Transit': 'info',
+                'Delivered': 'primary',
+                'Invoiced': 'secondary',
+                'Paid': 'success',
+                'Cancelled': 'danger'
+            };
+            return statusColors[status] || 'secondary';
+        }
+
+        function formatBoolean(value) {
+            return value ? 'Yes' : 'No';
+        }
+
+        function formatDimensions(dimensions) {
+            if (!dimensions) return 'N/A';
+            return `${dimensions.length || 0}L × ${dimensions.width || 0}W × ${dimensions.height || 0}H`;
+        }
+
+        function formatWindow(start, end) {
+            if (!start && !end) return 'N/A';
+            return `${formatTime(start)} - ${formatTime(end)}`;
+        }
+
+        function updateProgressSteps(status) {
+            const steps = document.querySelectorAll('.progress-steps .step');
+            if (!steps.length) return;
+
+            let activeIndex = 0;
+
+            switch (status) {
+                case 'Booked':
+                    activeIndex = 0;
+                    break;
+                case 'In Transit':
+                    activeIndex = 1;
+                    break;
+                case 'Delivered':
+                    activeIndex = 2;
+                    break;
+                case 'Invoiced':
+                    activeIndex = 3;
+                    break;
+                case 'Paid':
+                    activeIndex = 4;
+                    break;
+                default:
+                    activeIndex = -1;
+            }
+
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < activeIndex) {
+                    step.classList.add('completed');
+                } else if (index === activeIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Safe element query with null check
+        function getElementSafely(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with ID ${id} not found`);
+            }
+            return element;
+        }
+
+        // Helper function to safely set content
+        function setContent(id, content) {
+            const element = getElementSafely(id);
+            if (element) element.textContent = content;
+        }
+
+        function setHTML(id, html) {
+            const element = getElementSafely(id);
+            if (element) element.innerHTML = html;
+        }
+
+        // Helper function to get nested object values
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+        }
+
+        // Initialize Google Maps with route
+        function initMapWithRoute(origin, destination) {
+            if (!window.google || !google.maps) {
+                console.error("Google Maps not loaded");
+                return;
+            }
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 6,
+                center: {lat: 39.5, lng: -98.35},
+                mapTypeControl: false,        // Removes Map/Satellite buttons
+                fullscreenControl: false,     // Removes fullscreen button
+                streetViewControl: false,     // Removes Pegman / street view
+                zoomControl: false,           // Removes +/- zoom buttons
+                scaleControl: false,          // Removes the distance scale
+            });
+
+
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: false
+            });
+
+            const request = {
+                origin,
+                destination,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            directionsService.route(request, (response, status) => {
+                if (status === "OK") {
+                    directionsRenderer.setDirections(response);
+
+                    const bounds = new google.maps.LatLngBounds();
+                    const route = response.routes[0];
+
+                    route.legs.forEach(leg => {
+                        bounds.extend(leg.start_location);
+                        bounds.extend(leg.end_location);
+                    });
+
+                    map.fitBounds(bounds);
+                } else {
+                    console.error("Could not display route due to:", status);
+                }
+            });
+        }
+
+        // Function to fetch and populate shipment data
+        async function fetchAndPopulateShipment(shipmentNumber) {
+            try {
+                // Show loading state
+                const shipmentNumberEl = getElementSafely('modal-shipment-number');
+                const statusEl = getElementSafely('modal-status');
+
+                if (shipmentNumberEl) shipmentNumberEl.textContent = 'Loading...';
+                if (statusEl) statusEl.innerHTML = '<span class="badge bg-secondary">Loading</span>';
+
+                const response = await fetch(`/api/shipments/number/${shipmentNumber}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const shipmentData = await response.json();
+                populateShipmentModal(shipmentData);
+                shipmentDetailsModal.show();
+
+            } catch (error) {
+                console.error('Error fetching shipment:', error);
+                alert('Failed to load shipment details. Please try again.');
+                shipmentDetailsModal.hide();
+            }
+        }
+
+        // Function to populate modal with shipment data
+        function populateShipmentModal(shipmentData) {
+            if (!shipmentData) return;
+
+            // Store a deep copy of the original data
+            lastShipmentData = JSON.parse(JSON.stringify(shipmentData));
+            currentShipmentId = shipmentData._id;
+
+            // Basic info
+            setContent('modal-shipment-number', shipmentData.shipmentNumber || 'N/A');
+            setHTML('modal-status', `<span>${shipmentData.status}</span>`);
+
+            // Route information
+            const mapOrigin = [
+                shipmentData.origin?.address,
+                shipmentData.origin?.city,
+                shipmentData.origin?.state,
+                shipmentData.origin?.zipcode
+            ].filter(Boolean).join(', ');
+
+            const mapDestination = [
+                shipmentData.destination?.address,
+                shipmentData.destination?.city,
+                shipmentData.destination?.state,
+                shipmentData.destination?.zipcode
+            ].filter(Boolean).join(', ');
+
+            // Initialize map if both origin and destination are available
+            if (mapOrigin && mapDestination) {
+                initMapWithRoute(mapOrigin, mapDestination);
+            }
+
+            setContent('modal-origin', shipmentData.origin?.city ?
+                    `${shipmentData.origin.city}, ${shipmentData.origin.state}` : 'N/A');
+            setContent('modal-destination', shipmentData.destination?.city ?
+                    `${shipmentData.destination.city}, ${shipmentData.destination.state}` : 'N/A');
+
+            // Shipment details
+            setContent('modal-shipment-type', shipmentData.shipmentType || 'N/A');
+            setHTML('modal-equipment', `<span class="badge bg-secondary">${shipmentData.equipmentType || 'N/A'}</span>`);
+            setContent('modal-commodity', shipmentData.commodity || 'N/A');
+            setContent('modal-quantity', shipmentData.quantity || 'N/A');
+            setContent('modal-weight', shipmentData.weight ? `${shipmentData.weight} lbs` : 'N/A');
+            setContent('modal-pallets', shipmentData.pallets || 'N/A');
+            setContent('modal-dimensions', formatDimensions(shipmentData.dimensions));
+            setContent('modal-hazmat-class', shipmentData.hazmatClass || 'N/A');
+            setContent('modal-temperature-control', formatBoolean(shipmentData.temperatureControl));
+            setContent('modal-distance', shipmentData.distance ? `${shipmentData.distance} mi` : 'N/A');
+
+            // Calculate rate per mile
+            const rate = shipmentData.baseRate?.amount || 0;
+            const distance = shipmentData.distance || 0;
+            const ratePerMile = distance ? (rate / distance).toFixed(2) : '0.00';
+            setContent('modal-rate-per-mile', `$${ratePerMile}/mi`);
+
+            // Dates and windows
+            setContent('modal-pickup-date', formatDate(shipmentData.pickupDate));
+            setContent('modal-delivery-date', formatDate(shipmentData.deliveryDate));
+            setContent('modal-pickup-window', formatWindow(shipmentData.pickupWindowStart, shipmentData.pickupWindowEnd));
+            setContent('modal-delivery-window', formatWindow(shipmentData.deliveryWindowStart, shipmentData.deliveryWindowEnd));
+
+            // Financials
+            setContent('modal-base-rate', formatCurrency(shipmentData.baseRate?.amount));
+            setContent('modal-rate-type', shipmentData.baseRate?.rateType || 'flat');
+            setContent('modal-accessorials-total', formatCurrency(shipmentData.accessorialsTotal));
+            setContent('modal-fuel-surcharge', formatCurrency(shipmentData.fuelSurcharge));
+            setContent('modal-reserve-price', formatCurrency(shipmentData.reservePrice));
+            setContent('modal-total-rate', formatCurrency(shipmentData.totalRate));
+            setContent('modal-total-rate-summary', formatCurrency(shipmentData.totalRate));
+            setContent('modal-payment-terms', shipmentData.paymentTerms || 'N/A');
+            setHTML('modal-payment-status', `<span class="badge bg-${getStatusColor(shipmentData.paymentStatus || 'Unpaid')}">${shipmentData.paymentStatus || 'Unpaid'}</span>`);
+            setContent('modal-shipment-value', formatCurrency(shipmentData.shipmentValue));
+            setContent('modal-insurance-amount', formatCurrency(shipmentData.insuranceAmount));
+            setContent('modal-bidding-enabled', formatBoolean(shipmentData.biddingEnabled));
+            setContent('modal-bidding-end-date', shipmentData.biddingEndDate ? formatDate(shipmentData.biddingEndDate) : 'N/A');
+
+            // Handle accessorial total
+            const accessorialTotal = shipmentData.accessorialPricingTotal;
+            setContent('accessorial-total',
+                    typeof accessorialTotal === 'number'
+                            ? new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: 'USD'
+                            }).format(accessorialTotal)
+                            : 'N/A'
+            );
+
+            // Handle total rate
+            const totalRate = shipmentData.totalRate || 0;
+            const formattedTotalRate = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(totalRate);
+            setContent('total-rate', formattedTotalRate);
+
+            // Addresses
+            setContent('modal-origin-address', shipmentData.origin?.address || 'N/A');
+            setContent('modal-destination-address', shipmentData.destination?.address || 'N/A');
+            setContent('modal-origin-city', shipmentData.origin?.city || 'N/A');
+            setContent('modal-origin-state', shipmentData.origin?.state || 'N/A');
+            setContent('modal-origin-zip', shipmentData.origin?.zipcode || 'N/A');
+            setContent('modal-destination-city', shipmentData.destination?.city || 'N/A');
+            setContent('modal-destination-state', shipmentData.destination?.state || 'N/A');
+            setContent('modal-destination-zip', shipmentData.destination?.zipcode || 'N/A');
+
+            // Accessorials
+            setContent('modal-accessorial-hazmat', formatBoolean(shipmentData.accessorials?.shipment?.hazmat));
+            setContent('modal-accessorial-overdimension', formatBoolean(shipmentData.accessorials?.shipment?.overdimension));
+            setContent('modal-accessorial-prepaid', formatBoolean(shipmentData.accessorials?.shipment?.prepaidAndAdd));
+            setContent('modal-accessorial-freeze', formatBoolean(shipmentData.accessorials?.shipment?.freezeProtection));
+
+            setContent('modal-accessorial-pickup-inside', formatBoolean(shipmentData.accessorials?.pickup?.inside));
+            setContent('modal-accessorial-pickup-liftgate', formatBoolean(shipmentData.accessorials?.pickup?.liftgate));
+            setContent('modal-accessorial-pickup-limited', formatBoolean(shipmentData.accessorials?.pickup?.limitedAccess));
+            setContent('modal-accessorial-pickup-notify', formatBoolean(shipmentData.accessorials?.pickup?.notifyConsignee));
+            setContent('modal-accessorial-pickup-military', formatBoolean(shipmentData.accessorials?.pickup?.militaryAccess));
+            setContent('modal-accessorial-pickup-residential', formatBoolean(shipmentData.accessorials?.pickup?.residential));
+            setContent('modal-accessorial-pickup-airport', formatBoolean(shipmentData.accessorials?.pickup?.airport));
+            setContent('modal-accessorial-pickup-grocery', formatBoolean(shipmentData.accessorials?.pickup?.groceryWarehouse));
+
+            setContent('modal-accessorial-delivery-inside', formatBoolean(shipmentData.accessorials?.delivery?.inside));
+            setContent('modal-accessorial-delivery-liftgate', formatBoolean(shipmentData.accessorials?.delivery?.liftgate));
+            setContent('modal-accessorial-delivery-limited', formatBoolean(shipmentData.accessorials?.delivery?.limitedAccess));
+            setContent('modal-accessorial-delivery-notify', formatBoolean(shipmentData.accessorials?.delivery?.notifyConsignee));
+            setContent('modal-accessorial-delivery-military', formatBoolean(shipmentData.accessorials?.delivery?.militaryAccess));
+            setContent('modal-accessorial-delivery-residential', formatBoolean(shipmentData.accessorials?.delivery?.residential));
+            setContent('modal-accessorial-delivery-appointment', formatBoolean(shipmentData.accessorials?.delivery?.appointment));
+            setContent('modal-accessorial-delivery-airport', formatBoolean(shipmentData.accessorials?.delivery?.airport));
+            setContent('modal-accessorial-delivery-grocery', formatBoolean(shipmentData.accessorials?.delivery?.groceryWarehouse));
+
+            // Contacts
+            setContent('modal-shipper-name', shipmentData.shipperContact?.name || 'N/A');
+            setContent('modal-shipper-phone', shipmentData.shipperContact?.phone || 'N/A');
+            setContent('modal-shipper-email', shipmentData.shipperContact?.email || 'N/A');
+
+            setContent('modal-consignee-name', shipmentData.consigneeContact?.name || 'N/A');
+            setContent('modal-consignee-phone', shipmentData.consigneeContact?.phone || 'N/A');
+            setContent('modal-consignee-email', shipmentData.consigneeContact?.email || 'N/A');
+
+            setContent('modal-emergency-name', shipmentData.emergencyContact?.name || 'N/A');
+            setContent('modal-emergency-phone', shipmentData.emergencyContact?.phone || 'N/A');
+            setContent('modal-emergency-email', shipmentData.emergencyContact?.email || 'N/A');
+
+            // Documents & Notes
+            setContent('modal-special-instructions', shipmentData.specialInstructions || 'No special instructions.');
+            setContent('modal-notes', shipmentData.notes || 'No notes.');
+            setHTML('modal-tags', shipmentData.tags?.length ?
+                    shipmentData.tags.map(tag => `<span class="badge bg-light text-dark me-1">${tag}</span>`).join('') :
+                    'No tags');
+
+            // Update progress steps
+            updateProgressSteps(shipmentData.status);
+        }
+
+        // Function to collect edited data from form inputs
+        function collectEditedData() {
+            const editedData = {};
+            document.querySelectorAll('[data-editable]').forEach(element => {
+                const fieldName = element.getAttribute('data-editable');
+                const inputElement = element.querySelector('input');
+                if (fieldName && inputElement) {
+                    let value = inputElement.value;
+
+                    // Try to parse numeric values
+                    if (!isNaN(value) && value !== '') {
+                        value = parseFloat(value);
+                    }
+
+                    // Handle nested object paths
+                    if (fieldName.includes('.')) {
+                        const keys = fieldName.split('.');
+                        let current = editedData;
+                        for (let i = 0; i < keys.length - 1; i++) {
+                            if (!current[keys[i]]) current[keys[i]] = {};
+                            current = current[keys[i]];
+                        }
+                        current[keys[keys.length - 1]] = value;
+                    } else {
+                        editedData[fieldName] = value;
+                    }
+                }
+            });
+            return editedData;
+        }
+
+        // Function to restore original data display
+        function restoreOriginalData() {
+            if (!lastShipmentData) return;
+
+            // Clear any input fields and restore original content
+            document.querySelectorAll('[data-editable]').forEach(element => {
+                const fieldName = element.getAttribute('data-editable');
+                if (fieldName) {
+                    const originalValue = getNestedValue(lastShipmentData, fieldName);
+                    const displayValue = originalValue !== undefined && originalValue !== null ? originalValue : 'N/A';
+
+                    // Handle special formatting for certain fields
+                    if (fieldName.includes('rate') || fieldName.includes('price') || fieldName.includes('amount')) {
+                        element.textContent = formatCurrency(originalValue);
+                    } else if (fieldName.includes('date')) {
+                        element.textContent = formatDate(originalValue);
+                    } else if (fieldName.includes('weight') && originalValue) {
+                        element.textContent = `${originalValue} lbs`;
+                    } else if (fieldName.includes('distance') && originalValue) {
+                        element.textContent = `${originalValue} mi`;
+                    } else {
+                        element.textContent = displayValue;
+                    }
+                }
+            });
+        }
+
+        // Event delegation for table row clicks
+        const shipmentsTableBody = document.getElementById('shipments-tbody');
+        if (shipmentsTableBody) {
+            shipmentsTableBody.addEventListener('click', function (e) {
+                const row = e.target.closest('.shipment-row');
+                if (!row) return;
+
+                // Don't trigger if clicking on a link or button inside the row
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+
+                // Get shipment number from data attribute
+                const shipmentNumber = row.dataset.shipmentNumber;
+                if (shipmentNumber) {
+                    fetchAndPopulateShipment(shipmentNumber);
+                }
+            });
+        }
+
+        // Edit/Cancel/Save button functionality
+        const editBtn = getElementSafely('edit-shipment-btn');
+        const cancelBtn = getElementSafely('cancel-edit-btn');
+        const saveBtn = getElementSafely('save-shipment-btn');
+
+        // Edit button - enable editing mode
+        if (editBtn) {
+            editBtn.addEventListener('click', function () {
+                // Hide edit button, show cancel and save buttons
+                editBtn.style.display = 'none';
+                if (cancelBtn) cancelBtn.style.display = 'inline-block';
+                if (saveBtn) saveBtn.style.display = 'inline-block';
+
+                // Convert editable elements to input fields
+                document.querySelectorAll('[data-editable]').forEach(element => {
+                    const fieldName = element.getAttribute('data-editable');
+                    const rawValue = getNestedValue(lastShipmentData, fieldName);
+                    const safeValue = rawValue !== undefined && rawValue !== null ? rawValue : '';
+
+                    element.innerHTML = `<input type="text" class="form-control form-control-sm" value="${safeValue}">`;
+                });
+            });
+        }
+
+        // Cancel button - restore original data and exit edit mode
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                // Restore original data display
+                restoreOriginalData();
+
+                // Reset button visibility
+                if (editBtn) editBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'none';
+                if (saveBtn) saveBtn.style.display = 'none';
+            });
+        }
+
+        // Save button - save changes and exit edit mode
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async function () {
+                try {
+                    const shipmentNumber = getElementSafely('modal-shipment-number')?.textContent;
+                    if (!shipmentNumber || shipmentNumber === 'Loading...') {
+                        throw new Error('No valid shipment number found');
+                    }
+
+                    // Collect edited data
+                    const editedData = collectEditedData();
+
+                    // Send update request
+                    const response = await fetch(`/api/shipments/number/${shipmentNumber}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(editedData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    // Refresh the modal with updated data
+                    await fetchAndPopulateShipment(shipmentNumber);
+
+                    // Reset button visibility
+                    editBtn.style.display = 'inline-block';
+                    cancelBtn.style.display = 'none';
+                    saveBtn.style.display = 'none';
+
+                    // Show success message
+                    console.log('Shipment updated successfully');
+
+                } catch (error) {
+                    console.error('Error updating shipment:', error);
+                    alert('Failed to update shipment. Please try again.');
+                }
+            });
+        }
+    });
+</script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event listeners to all shipment rows
+        document.querySelectorAll('.shipment-row').forEach(row => {
+
+            row.addEventListener('click', function () {
+                const shipmentNumber = this.dataset.shipmentNumber;
+                const tableType = this.dataset.context || 'posted-shipment';
+                fetchShipmentDetails(shipmentNumber, tableType);
+            });
+        });
+
+        // Function to fetch shipment details and populate modal
+        function fetchShipmentDetails(shipmentNumber, tableType) {
+            fetch(`/api/shipments/number/${shipmentNumber}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+
+                    .then(shipment => {
+                        if (!shipment || typeof shipment !== 'object') {
+                            console.error('Shipment data is invalid:', shipment);
+                            alert('Shipment data is missing or malformed.');
+                            return;
+                        }
+                        const bookBtn = document.getElementById('bookButton');
+                        if (bookBtn) {
+                            if (tableType === 'active-shipment') {
+                                bookBtn.classList.add('d-none'); // Hide for active
+                            } else {
+                                bookBtn.classList.remove('d-none'); // Show for posted
+                            }
+                        }
+                        populateModal(shipment);
+                        console.log('Shipment documents:', shipment.documents);
+                        populateAttachments(shipment.documents, 'modal-attachments');
+
+
+
+                        // Show the modal
+                        const modal = new bootstrap.Modal(document.getElementById('shipmentDetailsModal'));
+                        modal.show();
+                        const modalEl = document.getElementById('shipmentDetailsModal');
+                        modalEl.addEventListener('hidden.bs.modal', function () {
+                            // Clean up Bootstrap modal state
+                            document.body.classList.remove('modal-open');
+                            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        });
+
+                    })
+                    .catch(error => {
+                        console.error('Error fetching shipment details:', error);
+                        alert('Failed to load shipment details. Please try again.');
+                    });
+        }
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        // Function to populate all modal fields with shipment data
+        function populateModal(shipment) {
+
+
+            // Basic shipment info
+            document.getElementById('modal-shipment-number').textContent = shipment.shipmentNumber;
+            document.getElementById('modal-status').textContent = shipment.status;
+            document.getElementById('modal-status').className = ${shipment.status};
+
+            // Route information
+            document.getElementById('modal-origin').textContent = `${shipment.origin.city}, ${shipment.origin.state}`;
+            document.getElementById('modal-destination').textContent = `${shipment.destination.city}, ${shipment.destination.state}`;
+
+            // Origin details
+            document.getElementById('modal-origin-address').textContent = shipment.origin.address || 'N/A';
+            document.getElementById('modal-origin-city').textContent = shipment.origin.city;
+            document.getElementById('modal-origin-state').textContent = shipment.origin.state;
+            document.getElementById('modal-origin-zip').textContent = shipment.origin.zipcode;
+            document.getElementById('modal-pickup-date').textContent = formatDate(shipment.pickupDate);
+
+            // Destination details
+            document.getElementById('modal-destination-address').textContent = shipment.destination.address || 'N/A';
+            document.getElementById('modal-destination-city').textContent = shipment.destination.city;
+            document.getElementById('modal-destination-state').textContent = shipment.destination.state;
+            document.getElementById('modal-destination-zip').textContent = shipment.destination.zipcode;
+            document.getElementById('modal-delivery-date').textContent = formatDate(shipment.deliveryDate);
+
+            // Shipment details
+            document.getElementById('modal-shipment-type').textContent = shipment.shipmentType || 'N/A';
+            document.getElementById('modal-equipment').textContent = shipment.equipmentType || 'N/A';
+            document.getElementById('modal-commodity').textContent = shipment.commodity || 'N/A';
+            document.getElementById('modal-quantity').textContent = shipment.quantity || 'N/A';
+            document.getElementById('modal-weight').textContent = shipment.weight ? `${formatNumber(shipment.weight)} lbs` : 'N/A';
+            document.getElementById('modal-pallets').textContent = shipment.pallets || 'N/A';
+            document.getElementById('modal-dimensions').textContent = shipment.dimensions || 'N/A';
+            document.getElementById('modal-hazmat-class').textContent = shipment.hazmatClass || 'N/A';
+            document.getElementById('modal-temperature-control').textContent = shipment.temperatureControl || 'N/A';
+            document.getElementById('modal-distance').textContent = shipment.distance ? `${shipment.distance} mi` : 'N/A';
+            document.getElementById('modal-rate-per-mile').textContent = shipment.ratePerMile ? `$${formatCurrency(shipment.ratePerMile)}/mi` : 'N/A';
+
+            // Financial information
+            document.getElementById('modal-total-rate').textContent = shipment.baseRate?.amount ? `$${formatCurrency(shipment.baseRate.amount)}` : 'N/A';
+            document.getElementById('modal-payment-status').textContent = shipment.paymentStatus || 'N/A';
+            document.getElementById('modal-payment-status').className = `badge bg-${statusColor(shipment.paymentStatus)}`;
+            document.getElementById('modal-base-rate').textContent = shipment.baseRate?.amount ? `$${formatCurrency(shipment.baseRate.amount)}` : 'N/A';
+            document.getElementById('accessorial-total').textContent = shipment.accessorialsTotal ? `$${formatCurrency(shipment.accessorialsTotal)}` : '$0.00';
+            document.getElementById('total-rate').textContent = shipment.totalRate ? `$${formatCurrency(shipment.totalRate)}` : 'N/A';
+            document.getElementById('modal-payment-terms').textContent = shipment.paymentTerms || 'N/A';
+            document.getElementById('modal-shipment-value').textContent = shipment.shipmentValue ? `$${formatCurrency(shipment.shipmentValue)}` : 'N/A';
+            document.getElementById('modal-insurance-amount').textContent = shipment.insuranceAmount ? `$${formatCurrency(shipment.insuranceAmount)}` : 'N/A';
+
+            // Contacts
+            if (shipment.shipperContact) {
+                document.getElementById('modal-shipper-name').textContent = shipment.shipperContact.name || 'N/A';
+                document.getElementById('modal-shipper-phone').textContent = shipment.shipperContact.phone || 'N/A';
+                document.getElementById('modal-shipper-email').textContent = shipment.shipperContact.email || 'N/A';
+            }
+
+            if (shipment.consigneeContact) {
+                document.getElementById('modal-consignee-name').textContent = shipment.consigneeContact.name || 'N/A';
+                document.getElementById('modal-consignee-phone').textContent = shipment.consigneeContact.phone || 'N/A';
+                document.getElementById('modal-consignee-email').textContent = shipment.consigneeContact.email || 'N/A';
+            }
+
+            if (shipment.emergencyContact) {
+                document.getElementById('modal-emergency-name').textContent = shipment.emergencyContact.name || 'N/A';
+                document.getElementById('modal-emergency-phone').textContent = shipment.emergencyContact.phone || 'N/A';
+                document.getElementById('modal-emergency-email').textContent = shipment.emergencyContact.email || 'N/A';
+            }
+
+            // Accessorials
+            if (shipment.accessorials) {
+                // Shipment accessorials
+                document.querySelector('[data-editable="accessorials.shipment.hazmat"]').checked = shipment.accessorials.shipment?.hazmat || false;
+                document.querySelector('[data-editable="accessorials.shipment.overdimension"]').checked = shipment.accessorials.shipment?.overdimension || false;
+                document.querySelector('[data-editable="accessorials.shipment.prepaidAndAdd"]').checked = shipment.accessorials.shipment?.prepaidAndAdd || false;
+                document.querySelector('[data-editable="accessorials.shipment.freezeProtection"]').checked = shipment.accessorials.shipment?.freezeProtection || false;
+
+                // Pickup accessorials
+                document.querySelector('[data-editable="accessorials.pickup.inside"]').checked = shipment.accessorials.pickup?.inside || false;
+                document.querySelector('[data-editable="accessorials.pickup.liftgate"]').checked = shipment.accessorials.pickup?.liftgate || false;
+                document.querySelector('[data-editable="accessorials.pickup.limitedAccess"]').checked = shipment.accessorials.pickup?.limitedAccess || false;
+                document.querySelector('[data-editable="accessorials.pickup.notifyConsignee"]').checked = shipment.accessorials.pickup?.notifyConsignee || false;
+                document.querySelector('[data-editable="accessorials.pickup.militaryAccess"]').checked = shipment.accessorials.pickup?.militaryAccess || false;
+                document.querySelector('[data-editable="accessorials.pickup.residential"]').checked = shipment.accessorials.pickup?.residential || false;
+                document.querySelector('[data-editable="accessorials.pickup.airport"]').checked = shipment.accessorials.pickup?.airport || false;
+                document.querySelector('[data-editable="accessorials.pickup.groceryWarehouse"]').checked = shipment.accessorials.pickup?.groceryWarehouse || false;
+
+                // Delivery accessorials
+                document.querySelector('[data-editable="accessorials.delivery.inside"]').checked = shipment.accessorials.delivery?.inside || false;
+                document.querySelector('[data-editable="accessorials.delivery.liftgate"]').checked = shipment.accessorials.delivery?.liftgate || false;
+                document.querySelector('[data-editable="accessorials.delivery.limitedAccess"]').checked = shipment.accessorials.delivery?.limitedAccess || false;
+                document.querySelector('[data-editable="accessorials.delivery.notifyConsignee"]').checked = shipment.accessorials.delivery?.notifyConsignee || false;
+                document.querySelector('[data-editable="accessorials.delivery.militaryAccess"]').checked = shipment.accessorials.delivery?.militaryAccess || false;
+                document.querySelector('[data-editable="accessorials.delivery.residential"]').checked = shipment.accessorials.delivery?.residential || false;
+                document.querySelector('[data-editable="accessorials.delivery.appointment"]').checked = shipment.accessorials.delivery?.appointment || false;
+                document.querySelector('[data-editable="accessorials.delivery.airport"]').checked = shipment.accessorials.delivery?.airport || false;
+                document.querySelector('[data-editable="accessorials.delivery.groceryWarehouse"]').checked = shipment.accessorials.delivery?.groceryWarehouse || false;
+            }
+
+            // Update progress steps based on status
+            updateProgressSteps(shipment.status);
+        }
+
+        // Helper function to update progress steps based on shipment status
+        function updateProgressSteps(status) {
+            const steps = document.querySelectorAll('.progress-steps .step');
+
+            // Reset all steps
+            steps.forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            function statusColor(status) {
+                if (!status || typeof status !== 'string') return 'secondary'; // fallback badge color
+                switch(status.toLowerCase()) {
+                    case 'booked': return 'primary';
+                    case 'in transit': return 'info';
+                    case 'delivered': return 'success';
+                    case 'invoiced': return 'warning';
+                    case 'paid': return 'success';
+                    case 'cancelled': return 'dark';
+                    default: return 'secondary';
+                }
+            }
+
+
+
+            // Activate steps based on status
+            switch(status.toLowerCase()) {
+                case 'booked':
+                    steps[0].classList.add('active');
+                    break;
+                case 'in transit':
+                    steps[0].classList.add('completed');
+                    steps[1].classList.add('active');
+                    break;
+                case 'delivered':
+                    steps[0].classList.add('completed');
+                    steps[1].classList.add('completed');
+                    steps[2].classList.add('active');
+                    break;
+                case 'invoiced':
+                    steps[0].classList.add('completed');
+                    steps[1].classList.add('completed');
+                    steps[2].classList.add('completed');
+                    steps[3].classList.add('active');
+                    break;
+                case 'paid':
+                    steps.forEach(step => step.classList.add('completed'));
+                    break;
+            }
+        }
+
+        // Helper function to format currency (you may already have this)
+        function formatCurrency(amount) {
+            return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        // Helper function to format numbers (you may already have this)
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        function populateAttachments(documents, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.warn('Missing container for attachments:', containerId);
+                return;
+            }
+
+            console.log('Rendering documents to:', containerId, documents);
+            container.innerHTML = '';
+
+            documents.forEach(doc => {
+                if (!doc.downloadUrl) return;
+
+                const link = document.createElement('a');
+                link.href = `/api/documents/view/${doc._id}`;
+                link.target = '_blank';
+                link.className = 'btn btn-outline-primary btn-sm d-flex align-items-center';
+
+                const icon = document.createElement('i');
+                icon.className = 'material-symbols-outlined me-1';
+                icon.textContent = 'description';
+
+                const label = document.createElement('span');
+                label.textContent = doc.description || 'Document';
+
+                link.appendChild(icon);
+                link.appendChild(label);
+                container.appendChild(link);
+            });
+        }
+
+
+
+
+
+
+
+
+        // Helper function to determine status color (you may already have this)
+        function statusColor(status) {
+            if (typeof status !== 'string') return 'secondary';
+            switch (status.toLowerCase()) {
+                case 'booked': return 'primary';
+                case 'in transit': return 'info';
+                case 'delivered': return 'success';
+                case 'invoiced': return 'warning';
+                case 'paid': return 'success';
+                case 'cancelled': return 'dark';
+                default: return 'secondary';
+            }
+        }
+
+    });
+</script>
+
+
+
+
+
+<!--<script src="/javascripts/dashboard/shipmentDetailsModal.js"></script>-->
+<script src="/javascripts/dashboard/filters.js"></script>
+<script src="/javascripts/dashboard/newShipmentForm.js"></script>
+<script src="/javascripts/dashboard/ratePerMile.js"></script>
+<script src="/javascripts/dashboard/sidebar.js"></script>
+<script src="/javascripts/dashboard/showContent.js"></script>
+<script src="/javascripts/dashboard/bookShipment.js"></script>
+<script>
+    document.getElementById("newShipmentButton").addEventListener("click", function () {
+        const modal = new bootstrap.Modal(document.getElementById("newShipmentModal"));
+        modal.show();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const editBtn = document.getElementById('editShipmentBtn');
+        const saveBtn = document.getElementById('saveShipmentBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+
+        let originalValues = {};
+        let editableCache = {};
+
+        editBtn.addEventListener('click', () => {
+            originalValues = {};
+            editableCache = {};
+
+            document.querySelectorAll('[data-editable]').forEach(el => {
+                const key = el.dataset.editable;
+                const currentValue = el.textContent.trim();
+                originalValues[key] = currentValue;
+                editableCache[key] = el.innerHTML;
+
+                // Handle modal-status as a select dropdown
+                if (key === 'status' && el.id === 'modal-status') {
+                    const select = document.createElement('select');
+                    select.className = 'form-select';
+                    select.setAttribute('data-editable-input', key);
+
+                    const options = ['Available', 'Booked', 'In Transit', 'Delivered', 'Invoiced', 'Paid', 'Cancelled'];
+
+                    options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        if (opt === currentValue) option.selected = true;
+                        select.appendChild(option);
+                    });
+
+                    el.innerHTML = '';
+                    el.appendChild(select);
+                } else {
+                    // Default case: plain input
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'form-control';
+                    input.value = currentValue;
+                    input.setAttribute('data-editable-input', key);
+
+                    el.innerHTML = '';
+                    el.appendChild(input);
+                }
+            });
+
+            editBtn.classList.add('d-none');
+            saveBtn.classList.remove('d-none');
+            cancelBtn.classList.remove('d-none');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            document.querySelectorAll('[data-editable]').forEach(el => {
+                const key = el.dataset.editable;
+                if (editableCache[key]) {
+                    el.innerHTML = editableCache[key];
+                }
+            });
+
+            editBtn.classList.remove('d-none');
+            saveBtn.classList.add('d-none');
+            cancelBtn.classList.add('d-none');
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const updates = {};
+            document.querySelectorAll('[data-editable]').forEach(el => {
+                const key = el.dataset.editable;
+                const input = el.querySelector(`[data-editable-input="${key}"]`);
+                const value = input ? input.value.trim() : '';
+                updates[key] = value;
+
+                // Replace form control with text
+                el.innerHTML = value;
+            });
+
+            const shipmentId = document.getElementById('modal-shipment-number').dataset.id;
+            updates._id = shipmentId;
+
+            fetch(`/api/shipments/update`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Failed to save shipment');
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Shipment updated:', data);
+                        editBtn.classList.remove('d-none');
+                        saveBtn.classList.add('d-none');
+                        cancelBtn.classList.add('d-none');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Failed to save shipment changes.');
+                    });
+        });
+    });
+</script>
+
+
+
+<style>
+
+
+    editable-inline {
+        border: 1px dashed #6c757d;
+        background-color: #f9f9f9;
+        padding: 4px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        cursor: text;
+    }
+
+    .editable-inline:focus {
+        outline: none;
+        border-color: #0d6efd; /* Bootstrap primary */
+        background-color: #eef5ff;
+    }
+    #map {
+        display: block;
+        width: 100%;
+        height: 200px;
+        object-fit: cover; /* if it’s an image fallback */
+        border-radius: 0 0 0 0; /* match card shape if needed */
+    }
+
+</style>

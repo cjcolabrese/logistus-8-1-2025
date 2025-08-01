@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg fixed-top" id="dashboard-navbar">
+    <div class="container-fluid">
+
+        <!-- Align links to right using ms-auto -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+            <ul class="navbar-nav ms-auto d-flex align-items-center text-end">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle p-0" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <img src="{{user.profileImageUrl}}" class="profile-image" alt="Profile Image"
+                             id="profile-image">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

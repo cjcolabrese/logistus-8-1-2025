@@ -1,0 +1,534 @@
+<div class="modal fade" id="newShipmentModal" tabindex="-1" aria-labelledby="newShipmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form id="newShipmentForm" action="/api/shipments/newShipment" method="POST" novalidate>
+                <!-- Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="newShipmentModalLabel">Create New Shipment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body d-flex" style="height: 500px; overflow-y: auto;">
+                    <!-- Left: Form Steps & Quick Tips -->
+                    <div class="pe-4" style="width: 280px; flex-shrink: 0;">
+                        <!-- Progress -->
+                        <h6>Step <span id="stepIndicator">1</span> of 4</h6>
+                        <div class="progress mb-4">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width:25%"></div>
+                        </div>
+                        <!-- Quick Tips -->
+                        <div class="card mb-4">
+                            <div class="card-header">Quick Tips</div>
+                            <div class="card-body small">
+                                <ul class="ps-3 mb-0" id="tips-list">
+                                    <li>Use full address for accurate rates.</li>
+                                    <li>Check hazmat class if applicable.</li>
+                                    <li>Double-check pickup/delivery windows.</li>
+                                    <li>Reserve Price ≈ min acceptable bid.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right: Actual Form -->
+                    <div class="flex-fill" style="min-width: 0;">
+                        <!-- Critical min-width constraint -->
+                        <!-- SECTION 1: Basics -->
+                        <fieldset class="mb-4">
+                            <legend>Basics</legend>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Pickup Date & Time *</label>
+                                    <input type="datetime-local"
+                                           name="pickupDate"
+                                           class="form-control"
+                                           required>
+                                    <div class="invalid-feedback">Pickup datetime required.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Delivery Date & Time *</label>
+                                    <input type="datetime-local"
+                                           name="deliveryDate"
+                                           class="form-control"
+                                           required>
+                                    <div class="invalid-feedback">Delivery datetime required.</div>
+                                </div>
+                            </div>
+                            <div class="row g-3" style="margin-top: 20px;">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="shipmentType">Shipment Type *</label>
+                                    <select id="shipmentType" name="shipmentType" class="form-select" required>
+                                        <option value="">Choose type…</option>
+                                        <option>Full Truckload</option>
+                                        <option>Less Than Truckload</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a shipment type.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="equipmentType">Equipment Type *</label>
+                                    <select id="equipmentType" name="equipmentType" class="form-select" required>
+                                        <option value="">Choose equipment…</option>
+                                        <option>Dry Van</option>
+                                        <option>Reefer</option>
+                                        <option>Flatbed</option>
+                                        <option>Power Only</option>
+                                        <option>Step Deck</option>
+                                        <option>Conestoga</option>
+                                        <option>Container</option>
+                                        <option>Box Truck</option>
+                                        <option>Cargo Van</option>
+                                        <option>Gooseneck</option>
+                                        <option>Hot Shot</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select equipment.</div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 2: Addresses -->
+                        <fieldset class="mb-4">
+                            <legend>Addresses</legend>
+                            <div class="mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="addressMode"
+                                           id="addressMode-account" value="account" checked>
+                                    <label class="form-check-label" for="addressMode-account">Select from
+                                        Account/Location</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="addressMode"
+                                           id="addressMode-manual" value="manual">
+                                    <label class="form-check-label" for="addressMode-manual">Enter Addresses
+                                        Manually</label>
+                                </div>
+                            </div>
+                            <!-- Account/Location Mode -->
+                            <div id="accountAddresses" class="row g-4">
+                                <!-- Origin -->
+                                <div class="col-md-6">
+                                    <h6>Origin</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="originAccount">Account</label>
+                                        <select id="originAccount" name="origin[accountId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Account…</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="originLocation">Location</label>
+                                        <select id="originLocation" name="origin[locationId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Location…</option>
+                                        </select>
+                                    </div>
+                                    <!-- Display contact info below both selectors -->
+                                    <div id="originContactDisplay" class="mt-3 small text-muted"></div>
+                                </div>
+                                <!-- Destination -->
+                                <div class="col-md-6">
+                                    <h6>Destination</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="destAccount">Account</label>
+                                        <select id="destAccount" name="destination[accountId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Account…</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label" for="destLocation">Location</label>
+                                        <select id="destLocation" name="destination[locationId]" class="form-select"
+                                                required>
+                                            <option value="">Choose Location…</option>
+                                        </select>
+                                    </div>
+                                    <!-- Display contact info below both selectors -->
+                                    <div id="destContactDisplay" class="mt-3 small text-muted"></div>
+                                </div>
+                            </div>
+                            <!-- Manual Address Mode -->
+                            <div id="manualAddresses" class="row g-4" style="display: none;">
+                                <div class="col-md-6">
+                                    <h6>Origin</h6>
+                                    <div class="mb-2 position-relative">
+                                        <input type="text" id="origin-address" name="origin[address]"
+                                               class="form-control address-input" data-group="origin"
+                                               placeholder="Start typing address…" required>
+                                        <ul id="origin-list" class="autocomplete-list"></ul>
+                                        <div class="invalid-feedback">Origin address required.</div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="text" id="origin-city" name="origin[city]" class="form-control"
+                                                   placeholder="City" required>
+                                            <div class="invalid-feedback">City required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="origin-state" name="origin[state]"
+                                                   class="form-control" placeholder="State" maxlength="2" required>
+                                            <div class="invalid-feedback">State required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="origin-zip" name="origin[zipcode]"
+                                                   class="form-control" placeholder="Zip" required>
+                                            <div class="invalid-feedback">Zip code required.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Destination</h6>
+                                    <div class="mb-2 position-relative">
+                                        <input type="text" id="dest-address" name="destination[address]"
+                                               class="form-control address-input" data-group="dest"
+                                               placeholder="Start typing address…" required>
+                                        <ul id="dest-list" class="autocomplete-list"></ul>
+                                        <div class="invalid-feedback">Destination address required.</div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="text" id="dest-city" name="destination[city]"
+                                                   class="form-control" placeholder="City" required>
+                                            <div class="invalid-feedback">City required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="dest-state" name="destination[state]"
+                                                   class="form-control" placeholder="State" maxlength="2" required>
+                                            <div class="invalid-feedback">State required.</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" id="dest-zip" name="destination[zipcode]"
+                                                   class="form-control" placeholder="Zip" required>
+                                            <div class="invalid-feedback">Zip code required.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Distance field (always visible at bottom of address section) -->
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="distance">Distance (mi)</label>
+                                    <input type="number" id="distance" name="distance" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <!-- Hidden fields for Origin -->
+                            <input type="hidden" name="origin[resolvedAddress]" id="hiddenOriginAddress">
+                            <input type="hidden" name="origin[resolvedCity]" id="hiddenOriginCity">
+                            <input type="hidden" name="origin[resolvedState]" id="hiddenOriginState">
+                            <input type="hidden" name="origin[resolvedZip]" id="hiddenOriginZip">
+                            <!-- Hidden fields for Destination -->
+                            <input type="hidden" name="destination[resolvedAddress]" id="hiddenDestAddress">
+                            <input type="hidden" name="destination[resolvedCity]" id="hiddenDestCity">
+                            <input type="hidden" name="destination[resolvedState]" id="hiddenDestState">
+                            <input type="hidden" name="destination[resolvedZip]" id="hiddenDestZip">
+                        </fieldset>
+                        <!-- SECTION 3: Details -->
+                        <fieldset class="mb-4">
+                            <legend>Details</legend>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Weight (lbs)</label>
+                                    <input type="number"
+                                           name="weight"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Dimensions (L×W×H in)</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][length]"
+                                               class="form-control"
+                                               placeholder="L">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][width]"
+                                               class="form-control"
+                                               placeholder="W">
+                                        <input type="number"
+                                               name="shipmentDetails[dimensions][height]"
+                                               class="form-control"
+                                               placeholder="H">
+                                    </div>
+                                </div>
+                            </div>
+                            <legend style="margin-top: 1rem;">Accessorials</legend>
+                            <div class="row g-3">
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Shipment Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][hazmat]"
+                                                                   id="acc-hazmat"><label class="form-check-label"
+                                                                                          for="acc-hazmat">Hazardous
+                                        Materials</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][overdimension]"
+                                                                   id="acc-overdim"><label class="form-check-label"
+                                                                                           for="acc-overdim">Overdimension</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][prepaidAndAdd]"
+                                                                   id="acc-prepaid"><label class="form-check-label"
+                                                                                           for="acc-prepaid">Prepaid and
+                                        Add</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[shipment][freezeProtection]"
+                                                                   id="acc-freeze"><label class="form-check-label"
+                                                                                          for="acc-freeze">Freeze
+                                        Protection</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Pickup Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][inside]"
+                                                                   id="pickup-inside"><label class="form-check-label"
+                                                                                             for="pickup-inside">Inside
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][liftgate]"
+                                                                   id="pickup-liftgate"><label class="form-check-label"
+                                                                                               for="pickup-liftgate">Liftgate
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][limitedAccess]"
+                                                                   id="pickup-limited"><label class="form-check-label"
+                                                                                              for="pickup-limited">Limited
+                                        Access Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][notifyConsignee]"
+                                                                   id="pickup-notify"><label class="form-check-label"
+                                                                                             for="pickup-notify">Notify
+                                        Consignee Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][militaryAccess]"
+                                                                   id="pickup-military"><label class="form-check-label"
+                                                                                               for="pickup-military">Military
+                                        Access Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][residential]"
+                                                                   id="pickup-res"><label class="form-check-label"
+                                                                                          for="pickup-res">Residential
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][airport]"
+                                                                   id="pickup-airport"><label class="form-check-label"
+                                                                                              for="pickup-airport">Airport
+                                        Pickup</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[pickup][groceryWarehouse]"
+                                                                   id="pickup-grocery"><label class="form-check-label"
+                                                                                              for="pickup-grocery">Grocery
+                                        Warehouse Pickup</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <label class="form-label">Delivery Accessorials</label>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][inside]"
+                                                                   id="delivery-inside"><label class="form-check-label"
+                                                                                               for="delivery-inside">Inside
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][liftgate]"
+                                                                   id="delivery-liftgate"><label
+                                            class="form-check-label" for="delivery-liftgate">Liftgate Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][limitedAccess]"
+                                                                   id="delivery-limited"><label class="form-check-label"
+                                                                                                for="delivery-limited">Limited
+                                        Access Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][notifyConsignee]"
+                                                                   id="delivery-notify"><label class="form-check-label"
+                                                                                               for="delivery-notify">Notify
+                                        Consignee Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][militaryAccess]"
+                                                                   id="delivery-military"><label
+                                            class="form-check-label" for="delivery-military">Military Access
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][residential]"
+                                                                   id="delivery-res"><label class="form-check-label"
+                                                                                            for="delivery-res">Residential
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][appointment]"
+                                                                   id="delivery-appointment"><label
+                                            class="form-check-label" for="delivery-appointment">Appointment
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][airport]"
+                                                                   id="delivery-airport"><label class="form-check-label"
+                                                                                                for="delivery-airport">Airport
+                                        Delivery</label>
+                                    </div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox"
+                                                                   name="accessorials[delivery][groceryWarehouse]"
+                                                                   id="delivery-grocery"><label class="form-check-label"
+                                                                                                for="delivery-grocery">Grocery
+                                        Warehouse Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 4: Financials & Bidding -->
+                        <fieldset class="mb-4" style="display: none;">
+                            <legend>Financials & Bidding</legend>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Rate ($) *</label>
+                                    <input type="number"
+                                           name="rate[amount]"
+                                           class="form-control"
+                                           step="0.01"
+                                           required>
+                                    <div class="invalid-feedback">Rate is required.</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Rate per Mile</label>
+                                    <input type="number"
+                                           name="ratePerMile[amount]"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Reserve Price</label>
+                                    <input type="number"
+                                           name="reservePrice"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-3 d-flex align-items-end">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="biddingEnabled"
+                                               name="biddingEnabled">
+                                        <label class="form-check-label" for="biddingEnabled">
+                                            Enable Bidding
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Bidding End Date</label>
+                                    <input type="datetime-local"
+                                           name="biddingEndDate"
+                                           class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Payment Terms</label>
+                                    <input type="text"
+                                           name="paymentTerms"
+                                           class="form-control"
+                                           placeholder="Prepaid, COD…">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Shipment Value ($)</label>
+                                    <input type="number"
+                                           name="shipmentValue"
+                                           class="form-control"
+                                           step="0.01">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Tags</label>
+                                    <input type="text"
+                                           name="tags"
+                                           class="form-control"
+                                           placeholder="fragile, high-value…">
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 5: Requirements & Contacts -->
+                        <fieldset class="mb-4">
+                            <legend>Requirements & Contacts</legend>
+                            <div class="row g-4">
+                                <!-- Requirements -->
+                                <!-- Contacts -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Shipper Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="shipperContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="shipperContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="shipperContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Consignee Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="consigneeContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="consigneeContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="consigneeContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12 mb-2"><strong>Emergency Contact</strong></div>
+                                        <div class="col-4">
+                                            <input type="text" name="emergencyContact[name]"
+                                                   class="form-control" placeholder="Name">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="tel" name="emergencyContact[phone]"
+                                                   class="form-control" placeholder="Phone">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="email" name="emergencyContact[email]"
+                                                   class="form-control" placeholder="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!-- SECTION 6: Instructions & Notes -->
+                        <fieldset class="mb-4">
+                            <legend>Instructions & Notes</legend>
+                            <div class="mb-3">
+                                <label class="form-label" for="specialInstructions">Special Instructions</label>
+                                <textarea id="specialInstructions" name="specialInstructions" class="form-control"
+                                          rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="notes">Notes</label>
+                                <textarea id="notes" name="notes" class="form-control" rows="3"
+                                          maxlength="500"></textarea>
+                            </div>
+                            <div id="accessorialPricingFields"></div>
+                        </fieldset>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <div id="stepNavContainer" class="d-flex justify-content-between w-100"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

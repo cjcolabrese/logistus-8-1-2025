@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Afacad:ital,wght@0,400..700;1,400..700&family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .dropdown-menu {
+            background-color: #f8f9fa;
+            color: rgb(34, 34, 34);
+            font-family: "Montserrat", serif;
+        }
+    </style>
+    <style>
+        /* Basic styling for autocomplete suggestions */
+        #autocomplete-list {
+            position: absolute;
+            border: none;
+            background-color: #fff;
+            color: black;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .autocomplete-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .autocomplete-container {
+            position: relative;
+
+        }
+
+    </style>
+    <style>
+        .form-step {
+            display: none;
+            transition: opacity 0.5s ease;
+        }
+        .form-step.active {
+            display: block;
+            opacity: 1;
+        }
+        .continue-btn {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top" id="navbar">
+    <div class="container-fluid">
+        <img src="/images/white-shadow.png" class="img-fluid" id="logo" id="logo">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Align links to right using ms-auto -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav ms-auto d-flex align-items-center text-end">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle p-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{user.profileImageUrl}}" class="profile-image" alt="Profile Image" id="profile-image">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div class="container-fluid d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <form method="POST" action="/auth/complete-profile" id="multiStepForm" style="width: 400px;">
+        <div class="complete-profile-avatar text-center" >
+            <img style="height:80px;"
+                    src="{{user.profileImageUrl}}"
+                    class="profile-image d-block mx-auto"
+                    alt="Profile Image"
+                 id="profile-image-complete">
+
+        </div>
+        <hr>
+        <!-- Step 1: Email -->
+        <div class="form-step active">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input disabled type="email" class="form-control" id="email" name="email" placeholder="name@example.com" value="{{#if user.email}}{{user.email}}{{/if}}" required>
+            </div>
+            <button type="button" class="btn btn-primary continue-btn w-100">Continue</button>
+        </div>
+
+        <!-- Step 2: Phone Number -->
+        <div class="form-step">
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label" style="font-weight: 700; font-family: 'Raleway', sans-serif;">Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Enter Phone Number" required>
+            </div>
+            <button type="button" class="btn btn-primary continue-btn w-100">Continue</button>
+        </div>
+        <!-- Step 3: Address Information -->
+        <div class="form-step">
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+            <div class="mb-3">
+                <label for="state" class="form-label">State</label>
+                <select class="form-select" id="state" name="state" required>
+                    <option value="" disabled selected>Select a state</option>
+                    <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option>
+                    <option value="AR">AR</option><option value="CA">CA</option><option value="CO">CO</option>
+                    <option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option>
+                    <option value="GA">GA</option><option value="HI">HI</option><option value="ID">ID</option>
+                    <option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option>
+                    <option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option>
+                    <option value="ME">ME</option><option value="MD">MD</option><option value="MA">MA</option>
+                    <option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option>
+                    <option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option>
+                    <option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option>
+                    <option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option>
+                    <option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option>
+                    <option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option>
+                    <option value="SC">SC</option><option value="SD">SD</option><option value="TN">TN</option>
+                    <option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option>
+                    <option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option>
+                    <option value="WI">WI</option><option value="WY">WY</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="zip" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zip" name="zip" required>
+            </div>
+
+            <button type="button" class="btn btn-primary continue-btn w-100">Continue</button>
+        </div>
+
+        <script>
+            const phoneInput = document.getElementById('phoneNumber');
+
+            phoneInput.addEventListener('input', function (e) {
+                let input = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
+
+                // Limit input to 10 digits
+                if (input.length > 10) input = input.slice(0, 10);
+
+                let formatted = input;
+
+                if (input.length > 6) {
+                    formatted = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6)}`;
+                } else if (input.length > 3) {
+                    formatted = `(${input.slice(0, 3)}) ${input.slice(3)}`;
+                } else if (input.length > 0) {
+                    formatted = `(${input}`;
+                }
+
+                e.target.value = formatted;
+            });
+        </script>
+
+
+        <!-- Step 4: Business Type -->
+        <div class="form-step">
+            <div class="mb-3">
+                <label for="userType" class="form-label">Business Type</label>
+                <select class="form-select" id="userType" name="userType" required>
+                    <option value="" disabled selected>Business Type</option>
+                    <option value="Shipper">Shipper</option>
+                    <option value="Carrier">Carrier</option>
+                    <option value="Carrier/Shipper">Carrier/Shipper</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary continue-btn w-100">Continue</button>
+        </div>
+
+        <!-- Step 5: Industry -->
+        <div class="form-step">
+            <div class="mb-3">
+                <label for="industry" class="form-label">Industry</label>
+                <select class="form-select" id="industry" name="industry" required>
+                    <option value="" disabled selected>Select Industry</option>
+                    <option value="Freight">Freight</option>
+                    <option value="Autos">Autos</option>
+                    <option value="Freight/Autos">Freight/Autos</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary continue-btn w-100">Continue</button>
+        </div>
+
+        <!-- Step 6: DOT Number -->
+        <div class="form-step">
+            <div class="mb-3">
+                <label for="dotNumber" class="form-label">DOT Number</label>
+                <input type="text" class="form-control" id="dotNumber" name="dotNumber" required>
+                <ul id="suggestions" class="list-group mt-2" style="position: absolute; z-index: 1000;"></ul>
+
+                <div class="mb-3">
+                    <label for="companyName" class="form-label">Business/DBA Name</label>
+                    <input type="text" class="form-control" id="companyName" name="companyName" required>
+                </div>
+            </div>
+
+            <!-- Final Step: Submit -->
+
+            <button type="submit" class="btn btn-success w-100">Complete Profile</button>
+
+        </div>
+    </form>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formSteps = document.querySelectorAll('.form-step');
+        const continueBtns = document.querySelectorAll('.continue-btn');
+        let currentStep = 0;
+
+        function showStep(step) {
+            formSteps.forEach((formStep, index) => {
+                formStep.classList.toggle('active', index === step);
+            });
+        }
+
+        function validateStep(step) {
+            const inputs = formSteps[step].querySelectorAll('input, select');
+            for (let input of inputs) {
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        continueBtns.forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    if (currentStep < formSteps.length) {
+                        showStep(currentStep);
+                    }
+                }
+            });
+        });
+
+        showStep(currentStep);  // Show the first step
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#dotNumber').on('input', function() {
+            const query = $(this).val().trim();
+
+            if (query.length < 3) {
+                $('#suggestions').empty();
+                return;
+            }
+
+            $.ajax({
+                url: '/api/autocomplete-dot-number',
+                method: 'GET',
+                data: { query },
+                success: function(data) {
+                    console.log('Autocomplete Response:', data); // Debugging output
+                    $('#suggestions').empty();
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            $('#suggestions').append(`
+                                <li class="list-group-item suggestion-item"
+                                    data-dot-number="${item.dotNumber || ''}"
+                                    data-legal-name="${item.legalName || ''}"
+                                    data-dba-name="${item.dbaName || ''}">
+                                    <strong>DOT Number:</strong> ${item.dotNumber || 'N/A'}
+                                    <br><strong>Legal Name:</strong> ${item.legalName || 'N/A'}
+                                    ${item.dbaName ? `<br><strong>DBA:</strong> ${item.dbaName}` : ''}
+                                    <br><strong>Address:</strong> ${item.phyStreet || 'N/A'}, ${item.phyCity || ''}, ${item.phyState || ''} ${item.phyZipcode || ''}
+                                    <br><strong>Safety Rating:</strong> ${item.safetyRating || 'N/A'}
+                                    <br><strong>Status Code:</strong> ${item.statusCode || 'N/A'}
+                                    <br><strong>Total Crashes:</strong> ${item.crashTotal || 'N/A'}
+                                    <br><strong>Fatal Crashes:</strong> ${item.fatalCrash || 'N/A'}
+                                    <br><strong>Injury Crashes:</strong> ${item.injCrash || 'N/A'}
+                                </li>
+                            `);
+                        });
+                    } else {
+                        $('#suggestions').append('<li class="list-group-item">No results found</li>');
+                    }
+                },
+                error: function() {
+                    $('#suggestions').empty().append('<li class="list-group-item text-danger">Error fetching data</li>');
+                }
+            });
+        });
+
+        // Handle suggestion item click
+        $('#suggestions').on('click', '.suggestion-item', function() {
+            const dotNumber = $(this).data('dot-number');
+            const legalName = $(this).data('legal-name');
+            const dbaName = $(this).data('dba-name');
+
+            // Prefer legalName if available, otherwise fallback to dbaName
+            const nameToUse = legalName || dbaName || '';
+
+            console.log('Selected DOT Number:', dotNumber);      // Debugging output
+            console.log('Selected Legal Name:', legalName);       // Debugging output
+            console.log('Selected DBA Name:', dbaName);           // Debugging output
+
+            $('#dotNumber').val(dotNumber);      // Populate #dotNumber
+            $('#companyName').val(nameToUse);   // Populate #businessName with legalName or dbaName
+            $('#suggestions').empty();           // Clear suggestions after selection
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+    const addressInput = document.getElementById('address-input');
+    const autocompleteList = document.getElementById('autocomplete-list');
+
+    addressInput.addEventListener('input', async function () {
+        const query = addressInput.value.trim();
+
+        // Clear the suggestions if input is empty
+        if (!query) {
+            autocompleteList.innerHTML = '';
+            return;
+        }
+
+        try {
+            // Send a request to the backend autocomplete endpoint
+            const response = await fetch(`/autocomplete?input=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+
+            // Clear previous suggestions
+            autocompleteList.innerHTML = '';
+
+            // Loop through each prediction and add it to the list
+            data.predictions.forEach(prediction => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = prediction.description;
+
+                // On click, set the input value to the chosen suggestion and clear the list
+                item.addEventListener('click', function () {
+                    addressInput.value = prediction.description;
+                    autocompleteList.innerHTML = '';
+                });
+
+                autocompleteList.appendChild(item);
+            });
+        } catch (error) {
+            console.error('Error fetching autocomplete suggestions:', error);
+        }
+    });
+
+    // Optionally clear suggestions when clicking outside of the input field
+    document.addEventListener('click', function (e) {
+        if (e.target !== addressInput) {
+            autocompleteList.innerHTML = '';
+        }
+    });
+</script>
+<script>
+    // Function to apply the theme and update the UI
+    function applyTheme(theme) {
+        const isDarkMode = theme === 'dark';
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        document.querySelector('.navbar').classList.toggle('dark-mode', isDarkMode);
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.toggle('dark-mode', isDarkMode);
+        });
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.toggle('dark-mode', isDarkMode);
+        });
+
+        // Update the logo based on the theme
+        const logo = document.getElementById('navbarLogo');
+        logo.src = isDarkMode ? '/images/white-shadow.png' : '/images/llogo.png';
+
+        // Update the toggle button icon and text
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        if (isDarkMode) {
+            themeIcon.textContent = 'light_mode';
+            themeText.textContent = 'Light Mode';
+        } else {
+            themeIcon.textContent = 'dark_mode';
+            themeText.textContent = 'Dark Mode';
+        }
+    }
+
+    // Function to toggle the theme
+    function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else {
+            // Detect system preference
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = prefersDarkScheme ? 'dark' : 'light';
+            applyTheme(defaultTheme);
+        }
+        // Attach event listener to the toggle button
+        document.getElementById('toggleDarkMode').addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+            toggleTheme();
+        });
+    });
+
+</script>
+<script>
+    const phoneInput = document.getElementById('phoneNumber');
+
+    phoneInput.addEventListener('input', function (e) {
+        let input = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
+
+        // Limit input to 10 digits
+        if (input.length > 10) input = input.slice(0, 10);
+
+        let formatted = input;
+
+        if (input.length > 6) {
+            formatted = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6)}`;
+        } else if (input.length > 3) {
+            formatted = `(${input.slice(0, 3)}) ${input.slice(3)}`;
+        } else if (input.length > 0) {
+            formatted = `(${input}`;
+        }
+
+        e.target.value = formatted;
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const addressInput = document.getElementById("address");
+        const cityInput = document.getElementById("city");
+        const stateInput = document.getElementById("state");
+        const zipInput = document.getElementById("zip");
+
+        // Create and append suggestion container
+        const autocompleteContainer = document.createElement("div");
+        autocompleteContainer.id = "autocomplete-list";
+        autocompleteContainer.style.position = "absolute";
+        autocompleteContainer.style.zIndex = "1000";
+        autocompleteContainer.className = "autocomplete-list";
+        addressInput.parentNode.appendChild(autocompleteContainer);
+
+        addressInput.addEventListener("input", async function () {
+            const query = addressInput.value.trim();
+
+            if (query.length < 3) {
+                autocompleteContainer.innerHTML = "";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/address/autocomplete?input=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                autocompleteContainer.innerHTML = "";
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    const noResult = document.createElement("div");
+                    noResult.textContent = "No results";
+                    noResult.className = "autocomplete-item";
+                    autocompleteContainer.appendChild(noResult);
+                    return;
+                }
+
+                data.forEach(suggestion => {
+                    const item = document.createElement("div");
+                    item.className = "autocomplete-item";
+                    item.textContent = suggestion.description;
+
+                    item.addEventListener("click", async function () {
+                        addressInput.value = suggestion.description;
+                        autocompleteContainer.innerHTML = "";
+
+                        if (!suggestion.placeId) {
+                            console.warn("No placeId provided in suggestion:", suggestion);
+                            return;
+                        }
+
+                        try {
+                            const detailRes = await fetch(`/api/address/details?placeId=${encodeURIComponent(suggestion.placeId)}`);
+
+                            if (!detailRes.ok) {
+                                console.error("Error fetching details:", await detailRes.text());
+                                return;
+                            }
+
+                            const detailData = await detailRes.json();
+
+                            if (detailData) {
+                                const { street, city, state, zip } = detailData;
+
+                                if (street) addressInput.value = street;
+                                if (city) cityInput.value = city;
+                                if (state) {
+                                    const normalized = state.trim().toUpperCase();
+                                    const matchingOption = [...stateInput.options].find(opt => opt.value === normalized);
+                                    if (matchingOption) {
+                                        stateInput.value = normalized;
+                                    } else {
+                                        console.warn(`No matching option in #state select for value: ${state}`);
+                                    }
+                                }
+
+                                if (zip) zipInput.value = zip;
+                            }
+                        } catch (err) {
+                            console.error("Failed to autofill address fields:", err);
+                        }
+                    });
+
+
+                    autocompleteContainer.appendChild(item);
+                });
+            } catch (err) {
+                console.error("Error fetching address autocomplete:", err);
+            }
+        });
+
+        // Hide suggestions when clicking elsewhere
+        document.addEventListener("click", function (e) {
+            if (!autocompleteContainer.contains(e.target) && e.target !== addressInput) {
+                autocompleteContainer.innerHTML = "";
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

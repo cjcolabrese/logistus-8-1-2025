@@ -1,0 +1,695 @@
+<div class="modal fade" id="shipmentDetailsModal" tabindex="-1" aria-labelledby="shipmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0">
+            <!-- Modal Header with Status Progress -->
+            <div class="modal-header position-relative bg-gradient-primary text-white pb-4">
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="modal-title mb-1" id="shipmentDetailsModalLabel">
+                                <span id="modal-shipment-number" class="me-2"></span>
+                                <span class="badge rounded-pill align-middle" id="modal-status"></span>
+                            </h5>
+                            <div class="text-white-50 small" id="modal-route">
+                                <span id="modal-origin"></span>
+                                <i class="material-symbols-outlined mx-2" style="font-size:1rem;">arrow_right_alt</i>
+                                <span id="modal-destination"></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white opacity-100" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="shipment-progress mt-3">
+                        <div class="progress-steps">
+                            <div class="step booked">
+                                <div class="step-icon"><i class="material-symbols-outlined">assignment</i></div>
+                                <div class="step-label">Booked</div>
+                            </div>
+                            <div class="step in-transit">
+                                <div class="step-icon"><i class="material-symbols-outlined">local_shipping</i></div>
+                                <div class="step-label">In Transit</div>
+                            </div>
+                            <div class="step delivered">
+                                <div class="step-icon"><i class="material-symbols-outlined">location_on</i></div>
+                                <div class="step-label">Delivered</div>
+                            </div>
+                            <div class="step invoiced">
+                                <div class="step-icon"><i class="material-symbols-outlined">receipt</i></div>
+                                <div class="step-label">Invoiced</div>
+                            </div>
+                            <div class="step paid">
+                                <div class="step-icon"><i class="material-symbols-outlined">payments</i></div>
+                                <div class="step-label">Paid</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body pt-4">
+                <div class="row g-4">
+                    <!-- Left Column -->
+                    <div class="col-lg-6">
+                        <!-- Shipment Overview Card -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">info</i> Shipment Overview</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Shipment Type</label>
+                                        <div id="modal-shipment-type" data-editable="shipmentType"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Equipment Type</label>
+                                        <div id="modal-equipment" data-editable="equipmentType"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Commodity</label>
+                                        <div id="modal-commodity" data-editable="commodity"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Quantity</label>
+                                        <div id="modal-quantity" data-editable="quantity"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Weight (lbs)</label>
+                                        <div id="modal-weight" data-editable="weight"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Pallets</label>
+                                        <div id="modal-pallets" data-editable="pallets"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Dimensions</label>
+                                        <div id="modal-dimensions" data-editable="dimensions"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Hazmat Class</label>
+                                        <div id="modal-hazmat-class" data-editable="hazmatClass"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Temp Control</label>
+                                        <div id="modal-temperature-control" data-editable="temperatureControl"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Distance (mi)</label>
+                                        <div id="modal-distance" data-editable="distance"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="d-block text-muted small mb-1">Rate per Mile</label>
+                                        <div id="modal-rate-per-mile" data-editable="ratePerMile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Summary Card -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">attach_money</i> Financial Summary</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <label class="d-block text-muted small mb-1">Total Rate</label>
+                                        <h4 class="mb-0 text-primary" id="modal-total-rate" data-editable="totalRate"></h4>
+                                    </div>
+                                    <div class="text-end">
+                                        <label class="d-block text-muted small mb-1">Payment Status</label>
+                                        <span class="badge" id="modal-payment-status" data-editable="paymentStatus"></span>
+                                    </div>
+                                </div>
+                                <div class="bg-light p-3 rounded">
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Base Rate</span>
+                                        <span id="modal-base-rate" data-editable="baseRate.amount"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Rate Type</span>
+                                        <span id="modal-rate-type" data-editable="baseRate.rateType"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Accessorials</span>
+                                        <span id="modal-accessorials-total" data-editable="accessorialsTotal"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Fuel Surcharge</span>
+                                        <span id="modal-fuel-surcharge" data-editable="fuelSurcharge"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span class="text-muted">Reserve Price</span>
+                                        <span id="modal-reserve-price" data-editable="reservePrice"></span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-semibold">
+                                        <span>Total</span>
+                                        <span id="modal-total-rate-summary" data-editable="totalRate"></span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Payment Terms</label>
+                                    <div id="modal-payment-terms" data-editable="paymentTerms"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Shipment Value</label>
+                                    <div id="modal-shipment-value" data-editable="shipmentValue"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-1">Insurance Amount</label>
+                                    <div id="modal-insurance-amount" data-editable="insuranceAmount"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-lg-6">
+                        <!-- Route Details Card -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">route</i> Route Details</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="d-flex">
+                                            <div class="me-3 text-primary">
+                                                <i class="material-symbols-outlined">upload</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-semibold mb-1">Pickup Location</h6>
+                                                <div class="mb-2" id="modal-origin-address" data-editable="origin.address"></div>
+                                                <div class="mb-1">
+                                                    <span class="badge bg-light text-dark me-1" id="modal-origin-city" data-editable="origin.city"></span>
+                                                    <span class="badge bg-light text-dark me-1" id="modal-origin-state" data-editable="origin.state"></span>
+                                                    <span class="badge bg-light text-dark" id="modal-origin-zip" data-editable="origin.zipcode"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="material-symbols-outlined me-1" style="font-size:1rem;">calendar_today</i>
+                                                    <span id="modal-pickup-date" data-editable="pickupDate"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small mt-1">
+                                                    <i class="material-symbols-outlined me-1" style="font-size:1rem;">schedule</i>
+                                                    <span id="modal-pickup-window" data-editable="pickupWindow"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="d-flex">
+                                            <div class="me-3 text-danger">
+                                                <i class="material-symbols-outlined">download</i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-semibold mb-1">Delivery Location</h6>
+                                                <div class="mb-2" id="modal-destination-address" data-editable="destination.address"></div>
+                                                <div class="mb-1">
+                                                    <span class="badge bg-light text-dark me-1" id="modal-destination-city" data-editable="destination.city"></span>
+                                                    <span class="badge bg-light text-dark me-1" id="modal-destination-state" data-editable="destination.state"></span>
+                                                    <span class="badge bg-light text-dark" id="modal-destination-zip" data-editable="destination.zipcode"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="material-symbols-outlined me-1" style="font-size:1rem;">calendar_today</i>
+                                                    <span id="modal-delivery-date" data-editable="deliveryDate"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center text-muted small mt-1">
+                                                    <i class="material-symbols-outlined me-1" style="font-size:1rem;">schedule</i>
+                                                    <span id="modal-delivery-window" data-editable="deliveryWindow"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Map Placeholder -->
+                                <div class="rounded bg-light mb-3" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                                    <div class="text-center text-muted">
+                                        <i class="material-symbols-outlined mb-2" style="font-size: 2rem;">map</i>
+                                        <div>Route Map Visualization</div>
+                                    </div>
+                                </div>
+
+                                <!-- Accessorials Accordion -->
+                                <div class="accordion" id="accessorialsAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#accessorialsCollapse" aria-expanded="true" aria-controls="accessorialsCollapse">
+                                                Accessorials
+                                            </button>
+                                        </h2>
+                                        <div id="accessorialsCollapse" class="accordion-collapse collapse show" data-bs-parent="#accessorialsAccordion">
+                                            <div class="accordion-body p-0">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <h6 class="fw-semibold small mb-2">Shipment</h6>
+                                                        <ul class="list-unstyled small">
+                                                            <li class="mb-1"><span id="modal-accessorial-hazmat" data-editable="accessorials.shipment.hazmat"></span> Hazmat</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-overdimension" data-editable="accessorials.shipment.overdimension"></span> Overdimension</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-prepaid" data-editable="accessorials.shipment.prepaidAndAdd"></span> Prepaid & Add</li>
+                                                            <li><span id="modal-accessorial-freeze" data-editable="accessorials.shipment.freezeProtection"></span> Freeze Protection</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <h6 class="fw-semibold small mb-2">Pickup</h6>
+                                                        <ul class="list-unstyled small">
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-inside" data-editable="accessorials.pickup.inside"></span> Inside</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-liftgate" data-editable="accessorials.pickup.liftgate"></span> Liftgate</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-limited" data-editable="accessorials.pickup.limitedAccess"></span> Limited Access</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-notify" data-editable="accessorials.pickup.notifyConsignee"></span> Notify Consignee</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-military" data-editable="accessorials.pickup.militaryAccess"></span> Military Access</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-residential" data-editable="accessorials.pickup.residential"></span> Residential</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-pickup-airport" data-editable="accessorials.pickup.airport"></span> Airport</li>
+                                                            <li><span id="modal-accessorial-pickup-grocery" data-editable="accessorials.pickup.groceryWarehouse"></span> Grocery Warehouse</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <h6 class="fw-semibold small mb-2">Delivery</h6>
+                                                        <ul class="list-unstyled small">
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-inside" data-editable="accessorials.delivery.inside"></span> Inside</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-liftgate" data-editable="accessorials.delivery.liftgate"></span> Liftgate</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-limited" data-editable="accessorials.delivery.limitedAccess"></span> Limited Access</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-notify" data-editable="accessorials.delivery.notifyConsignee"></span> Notify Consignee</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-military" data-editable="accessorials.delivery.militaryAccess"></span> Military Access</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-residential" data-editable="accessorials.delivery.residential"></span> Residential</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-appointment" data-editable="accessorials.delivery.appointment"></span> Appointment</li>
+                                                            <li class="mb-1"><span id="modal-accessorial-delivery-airport" data-editable="accessorials.delivery.airport"></span> Airport</li>
+                                                            <li><span id="modal-accessorial-delivery-grocery" data-editable="accessorials.delivery.groceryWarehouse"></span> Grocery Warehouse</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contacts Card -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">contacts</i> Contacts</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Shipper</h6>
+                                        <div class="mb-1" id="modal-shipper-name" data-editable="shipperContact.name"></div>
+                                        <div class="mb-1" id="modal-shipper-phone" data-editable="shipperContact.phone"></div>
+                                        <div id="modal-shipper-email" data-editable="shipperContact.email"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-semibold small mb-2">Consignee</h6>
+                                        <div class="mb-1" id="modal-consignee-name" data-editable="consigneeContact.name"></div>
+                                        <div class="mb-1" id="modal-consignee-phone" data-editable="consigneeContact.phone"></div>
+                                        <div id="modal-consignee-email" data-editable="consigneeContact.email"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <h6 class="fw-semibold small mb-2">Emergency Contact</h6>
+                                        <div class="mb-1" id="modal-emergency-name" data-editable="emergencyContact.name"></div>
+                                        <div class="mb-1" id="modal-emergency-phone" data-editable="emergencyContact.phone"></div>
+                                        <div id="modal-emergency-email" data-editable="emergencyContact.email"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents & Notes Card -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-header bg-white border-0 pb-0">
+                                <h6 class="fw-semibold mb-3"><i class="material-symbols-outlined me-2">description</i> Documents & Notes</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Special Instructions</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-special-instructions" data-editable="specialInstructions"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="d-block text-muted small mb-2">Notes</label>
+                                    <div class="bg-light p-3 rounded small" id="modal-notes" data-editable="notes"></div>
+                                </div>
+                                <div>
+                                    <label class="d-block text-muted small mb-2">Tags</label>
+                                    <div id="modal-tags" data-editable="tags"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="d-block text-muted small mb-2">Attachments</label>
+                                    <div class="d-flex flex-wrap gap-2" id="modal-attachments">
+                                        <!-- Attachments will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" id="close-modal-btn">
+                    <i class="material-symbols-outlined me-1">close</i> Close
+                </button>
+                <button type="button" class="btn btn-outline-danger" id="cancel-edit-btn" style="display:none;">
+                    <i class="material-symbols-outlined me-1">cancel</i> Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="save-shipment-btn" style="display:none;">
+                    <i class="material-symbols-outlined me-1">save</i> Save Changes
+                </button>
+                <button type="button" class="btn btn-primary" id="edit-shipment-btn">
+                    <i class="material-symbols-outlined me-1">edit</i> Edit Shipment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modal
+        const shipmentDetailsModal = new bootstrap.Modal(document.getElementById('shipmentDetailsModal'));
+        let currentShipmentId = null;
+
+        // Helper functions
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined) return 'N/A';
+            return '$' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
+        function getStatusColor(status) {
+            const statusColors = {
+                'Available': 'success',
+                'Booked': 'warning',
+                'In Transit': 'info',
+                'Delivered': 'primary',
+                'Invoiced': 'secondary',
+                'Paid': 'success',
+                'Cancelled': 'danger'
+            };
+            return statusColors[status] || 'secondary';
+        }
+
+        function formatBoolean(value) {
+            return value ? 'Yes' : 'No';
+        }
+
+        function formatDimensions(dimensions) {
+            if (!dimensions) return 'N/A';
+            return `${dimensions.length || 0}L × ${dimensions.width || 0}W × ${dimensions.height || 0}H`;
+        }
+
+        function formatWindow(start, end) {
+            if (!start && !end) return 'N/A';
+            return `${formatTime(start)} - ${formatTime(end)}`;
+        }
+
+        function updateProgressSteps(status) {
+            const steps = document.querySelectorAll('.progress-steps .step');
+            if (!steps.length) return;
+
+            let activeIndex = 0;
+
+            switch(status) {
+                case 'Booked': activeIndex = 0; break;
+                case 'In Transit': activeIndex = 1; break;
+                case 'Delivered': activeIndex = 2; break;
+                case 'Invoiced': activeIndex = 3; break;
+                case 'Paid': activeIndex = 4; break;
+                default: activeIndex = -1;
+            }
+
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < activeIndex) {
+                    step.classList.add('completed');
+                } else if (index === activeIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        // Safe element query with null check
+        function getElementSafely(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with ID ${id} not found`);
+            }
+            return element;
+        }
+
+        // Function to fetch and populate shipment data
+        async function fetchAndPopulateShipment(shipmentNumber) {
+            try {
+                // Show loading state
+                const shipmentNumberEl = getElementSafely('modal-shipment-number');
+                const statusEl = getElementSafely('modal-status');
+
+                if (shipmentNumberEl) shipmentNumberEl.textContent = 'Loading...';
+                if (statusEl) statusEl.innerHTML = '<span class="badge bg-secondary">Loading</span>';
+
+                const response = await fetch(`/api/shipments/number/${shipmentNumber}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const shipmentData = await response.json();
+                populateShipmentModal(shipmentData);
+                shipmentDetailsModal.show();
+            } catch (error) {
+                console.error('Error fetching shipment:', error);
+                alert('Failed to load shipment details. Please try again.');
+                shipmentDetailsModal.hide();
+            }
+        }
+
+        // Function to populate modal with shipment data
+        function populateShipmentModal(shipmentData) {
+            if (!shipmentData) return;
+
+            currentShipmentId = shipmentData._id;
+
+            // Helper function to safely set content
+            function setContent(id, content) {
+                const element = getElementSafely(id);
+                if (element) element.textContent = content;
+            }
+
+            function setHTML(id, html) {
+                const element = getElementSafely(id);
+                if (element) element.innerHTML = html;
+            }
+
+            // Basic info
+            setContent('modal-shipment-number', shipmentData.shipmentNumber || 'N/A');
+            setHTML('modal-status', `<span class="badge bg-${getStatusColor(shipmentData.status)}">${shipmentData.status || 'N/A'}</span>`);
+
+            // Route information
+            setContent('modal-origin', shipmentData.origin?.city ?
+                    `${shipmentData.origin.city}, ${shipmentData.origin.state}` : 'N/A');
+            setContent('modal-destination', shipmentData.destination?.city ?
+                    `${shipmentData.destination.city}, ${shipmentData.destination.state}` : 'N/A');
+
+            // Shipment details
+            setContent('modal-shipment-type', shipmentData.shipmentType || 'N/A');
+            setHTML('modal-equipment', `<span class="badge bg-secondary">${shipmentData.equipmentType || 'N/A'}</span>`);
+            setContent('modal-commodity', shipmentData.commodity || 'N/A');
+            setContent('modal-quantity', shipmentData.quantity || 'N/A');
+            setContent('modal-weight', shipmentData.weight ? `${shipmentData.weight} lbs` : 'N/A');
+            setContent('modal-pallets', shipmentData.pallets || 'N/A');
+            setContent('modal-dimensions', formatDimensions(shipmentData.dimensions));
+            setContent('modal-hazmat-class', shipmentData.hazmatClass || 'N/A');
+            setContent('modal-temperature-control', formatBoolean(shipmentData.temperatureControl));
+            setContent('modal-distance', shipmentData.distance ? `${shipmentData.distance} mi` : 'N/A');
+
+            // Calculate rate per mile
+            const rate = shipmentData.baseRate?.amount || 0;
+            const distance = shipmentData.distance || 0;
+            const ratePerMile = distance ? (rate / distance).toFixed(2) : '0.00';
+            setContent('modal-rate-per-mile', `$${ratePerMile}/mi`);
+
+            // Dates and windows
+            setContent('modal-pickup-date', formatDate(shipmentData.pickupDate));
+            setContent('modal-delivery-date', formatDate(shipmentData.deliveryDate));
+            setContent('modal-pickup-window', formatWindow(shipmentData.pickupWindowStart, shipmentData.pickupWindowEnd));
+            setContent('modal-delivery-window', formatWindow(shipmentData.deliveryWindowStart, shipmentData.deliveryWindowEnd));
+
+            // Financials
+            setContent('modal-base-rate', formatCurrency(shipmentData.baseRate?.amount));
+            setContent('modal-rate-type', shipmentData.baseRate?.rateType || 'flat');
+            setContent('modal-accessorials-total', formatCurrency(shipmentData.accessorialsTotal));
+            setContent('modal-fuel-surcharge', formatCurrency(shipmentData.fuelSurcharge));
+            setContent('modal-reserve-price', formatCurrency(shipmentData.reservePrice));
+            setContent('modal-total-rate', formatCurrency(shipmentData.totalRate));
+            setContent('modal-total-rate-summary', formatCurrency(shipmentData.totalRate));
+            setContent('modal-payment-terms', shipmentData.paymentTerms || 'N/A');
+            setHTML('modal-payment-status', `<span class="badge bg-${getStatusColor(shipmentData.paymentStatus || 'Unpaid')}">${shipmentData.paymentStatus || 'Unpaid'}</span>`);
+            setContent('modal-shipment-value', formatCurrency(shipmentData.shipmentValue));
+            setContent('modal-insurance-amount', formatCurrency(shipmentData.insuranceAmount));
+            setContent('modal-bidding-enabled', formatBoolean(shipmentData.biddingEnabled));
+            setContent('modal-bidding-end-date', shipmentData.biddingEndDate ? formatDate(shipmentData.biddingEndDate) : 'N/A');
+
+            // Addresses
+            setContent('modal-origin-address', shipmentData.origin?.address || 'N/A');
+            setContent('modal-destination-address', shipmentData.destination?.address || 'N/A');
+            setContent('modal-origin-city', shipmentData.origin?.city || 'N/A');
+            setContent('modal-origin-state', shipmentData.origin?.state || 'N/A');
+            setContent('modal-origin-zip', shipmentData.origin?.zipcode || 'N/A');
+            setContent('modal-destination-city', shipmentData.destination?.city || 'N/A');
+            setContent('modal-destination-state', shipmentData.destination?.state || 'N/A');
+            setContent('modal-destination-zip', shipmentData.destination?.zipcode || 'N/A');
+
+            // Accessorials
+            setContent('modal-accessorial-hazmat', formatBoolean(shipmentData.accessorials?.shipment?.hazmat));
+            setContent('modal-accessorial-overdimension', formatBoolean(shipmentData.accessorials?.shipment?.overdimension));
+            setContent('modal-accessorial-prepaid', formatBoolean(shipmentData.accessorials?.shipment?.prepaidAndAdd));
+            setContent('modal-accessorial-freeze', formatBoolean(shipmentData.accessorials?.shipment?.freezeProtection));
+
+            setContent('modal-accessorial-pickup-inside', formatBoolean(shipmentData.accessorials?.pickup?.inside));
+            setContent('modal-accessorial-pickup-liftgate', formatBoolean(shipmentData.accessorials?.pickup?.liftgate));
+            setContent('modal-accessorial-pickup-limited', formatBoolean(shipmentData.accessorials?.pickup?.limitedAccess));
+            setContent('modal-accessorial-pickup-notify', formatBoolean(shipmentData.accessorials?.pickup?.notifyConsignee));
+            setContent('modal-accessorial-pickup-military', formatBoolean(shipmentData.accessorials?.pickup?.militaryAccess));
+            setContent('modal-accessorial-pickup-residential', formatBoolean(shipmentData.accessorials?.pickup?.residential));
+            setContent('modal-accessorial-pickup-airport', formatBoolean(shipmentData.accessorials?.pickup?.airport));
+            setContent('modal-accessorial-pickup-grocery', formatBoolean(shipmentData.accessorials?.pickup?.groceryWarehouse));
+
+            setContent('modal-accessorial-delivery-inside', formatBoolean(shipmentData.accessorials?.delivery?.inside));
+            setContent('modal-accessorial-delivery-liftgate', formatBoolean(shipmentData.accessorials?.delivery?.liftgate));
+            setContent('modal-accessorial-delivery-limited', formatBoolean(shipmentData.accessorials?.delivery?.limitedAccess));
+            setContent('modal-accessorial-delivery-notify', formatBoolean(shipmentData.accessorials?.delivery?.notifyConsignee));
+            setContent('modal-accessorial-delivery-military', formatBoolean(shipmentData.accessorials?.delivery?.militaryAccess));
+            setContent('modal-accessorial-delivery-residential', formatBoolean(shipmentData.accessorials?.delivery?.residential));
+            setContent('modal-accessorial-delivery-appointment', formatBoolean(shipmentData.accessorials?.delivery?.appointment));
+            setContent('modal-accessorial-delivery-airport', formatBoolean(shipmentData.accessorials?.delivery?.airport));
+            setContent('modal-accessorial-delivery-grocery', formatBoolean(shipmentData.accessorials?.delivery?.groceryWarehouse));
+
+            // Contacts
+            setContent('modal-shipper-name', shipmentData.shipperContact?.name || 'N/A');
+            setContent('modal-shipper-phone', shipmentData.shipperContact?.phone || 'N/A');
+            setContent('modal-shipper-email', shipmentData.shipperContact?.email || 'N/A');
+
+            setContent('modal-consignee-name', shipmentData.consigneeContact?.name || 'N/A');
+            setContent('modal-consignee-phone', shipmentData.consigneeContact?.phone || 'N/A');
+            setContent('modal-consignee-email', shipmentData.consigneeContact?.email || 'N/A');
+
+            setContent('modal-emergency-name', shipmentData.emergencyContact?.name || 'N/A');
+            setContent('modal-emergency-phone', shipmentData.emergencyContact?.phone || 'N/A');
+            setContent('modal-emergency-email', shipmentData.emergencyContact?.email || 'N/A');
+
+            // Documents & Notes
+            setContent('modal-special-instructions', shipmentData.specialInstructions || 'No special instructions.');
+            setContent('modal-notes', shipmentData.notes || 'No notes.');
+            setHTML('modal-tags', shipmentData.tags?.length ?
+                    shipmentData.tags.map(tag => `<span class="badge bg-light text-dark me-1">${tag}</span>`).join('') :
+                    'No tags');
+
+            // Update progress steps
+            updateProgressSteps(shipmentData.status);
+        }
+
+        // Event delegation for table row clicks
+        document.getElementById('shipments-tbody').addEventListener('click', function(e) {
+            const row = e.target.closest('.shipment-row');
+            if (!row) return;
+
+            // Don't trigger if clicking on a link or button inside the row
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+
+            // Get shipment number from data attribute
+            const shipmentNumber = row.dataset.shipmentNumber;
+
+            // Fetch and populate the modal with data from API
+            fetchAndPopulateShipment(shipmentNumber);
+        });
+
+        // Edit/Save functionality
+        const editBtn = getElementSafely('edit-shipment-btn');
+        const cancelBtn = getElementSafely('cancel-edit-btn');
+        const saveBtn = getElementSafely('save-shipment-btn');
+
+        if (editBtn && cancelBtn && saveBtn) {
+            editBtn.addEventListener('click', function() {
+                editBtn.style.display = 'none';
+                cancelBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'inline-block';
+
+                // Enable editing of fields
+                document.querySelectorAll('[data-editable]').forEach(element => {
+                    const fieldName = element.getAttribute('data-editable');
+                    element.innerHTML = `<input type="text" class="form-control form-control-sm" value="${element.textContent}">`;
+                });
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                const shipmentNumber = getElementSafely('modal-shipment-number')?.textContent;
+                if (shipmentNumber && shipmentNumber !== 'Loading...') {
+                    fetchAndPopulateShipment(shipmentNumber);
+                } else {
+                    shipmentDetailsModal.hide();
+                }
+            });
+
+            saveBtn.addEventListener('click', async function() {
+                try {
+                    const shipmentNumber = getElementSafely('modal-shipment-number')?.textContent;
+                    if (!shipmentNumber) throw new Error('No shipment number found');
+
+                    const response = await fetch(`/api/shipments/number/${shipmentNumber}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(collectEditedData())
+                    });
+
+                    if (!response.ok) throw new Error('Failed to update shipment');
+
+                    await fetchAndPopulateShipment(shipmentNumber);
+
+                    editBtn.style.display = 'inline-block';
+                    cancelBtn.style.display = 'none';
+                    saveBtn.style.display = 'none';
+
+                } catch (error) {
+                    console.error('Error updating shipment:', error);
+                    alert('Failed to update shipment. Please try again.');
+                }
+            });
+        }
+
+        function collectEditedData() {
+            const editedData = {};
+            document.querySelectorAll('[data-editable]').forEach(element => {
+                const fieldName = element.getAttribute('data-editable');
+                const value = element.querySelector('input')?.value;
+                if (fieldName && value !== undefined) {
+                    editedData[fieldName] = value;
+                }
+            });
+            return editedData;
+        }
+    });
+</script>

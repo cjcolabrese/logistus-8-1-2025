@@ -1,0 +1,317 @@
+{{> navbar}}
+{{> sidebar}}
+<div class="content">
+    <div id="dashboardContent" class="content-section active">
+
+    </div>
+    <div id="freightContent" class="content-section" style="display: none;" >
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                         style="padding: 15px;">
+                        <h5 class="mb-0">Your Shipments</h5>
+                        <span class="badge bg-light text-dark" id="shipment-count">{{userShipments.length}} total</span>
+                    </div>
+                    <!-- Advanced Filters Section -->
+                    <div class="card-body border-bottom bg-light">
+                        <div class="row g-3 align-items-end">
+                            <!-- Search Input -->
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted mb-1" style="padding-left: 10px;">Search
+                                    Shipments</label>
+                                <div class="input-group input-group-sm">
+                             <span class="input-group-text"><i class="material-symbols-outlined"
+                                                               style="font-size: 18px;">search</i></span>
+                                    <input type="text" id="search-filter" class="form-control"
+                                           placeholder="Shipment #, origin, destination...">
+                                </div>
+                            </div>
+                            <!-- Status Filter -->
+                            <div class="col-md-2">
+                                <label class="form-label small text-muted mb-1">Status</label>
+                                <select id="status-filter" class="form-select form-select-sm">
+                                    <option value="">All Status</option>
+                                    <option value="Available">Available</option>
+                                    <option value="Booked">Booked</option>
+                                    <option value="In Transit">In Transit</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Invoiced">Invoiced</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <!-- Equipment Type Filter -->
+                            <div class="col-md-2">
+                                <label class="form-label small text-muted mb-1">Equipment</label>
+                                <select id="equipment-filter" class="form-select form-select-sm">
+                                    <option value="">All Equipment</option>
+                                    <option value="Dry Van">Dry Van</option>
+                                    <option value="Reefer">Reefer</option>
+                                    <option value="Flatbed">Flatbed</option>
+                                    <option value="Power Only">Power Only</option>
+                                    <option value="Step Deck">Step Deck</option>
+                                    <option value="Conestoga">Conestoga</option>
+                                    <option value="Container">Container</option>
+                                    <option value="Box Truck">Box Truck</option>
+                                    <option value="Cargo Van">Cargo Van</option>
+                                    <option value="Gooseneck">Gooseneck</option>
+                                    <option value="Hot Shot">Hot Shot</option>
+                                </select>
+                            </div>
+                            <!-- Date Range Filter -->
+                            <div class="col-md-2">
+                                <label class="form-label small text-muted mb-1">Pickup Date</label>
+                                <input type="date" id="date-from-filter" class="form-control form-control-sm"
+                                       placeholder="From">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small text-muted mb-1">To Date</label>
+                                <input type="date" id="date-to-filter" class="form-control form-control-sm" placeholder="To">
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="col-md-1">
+                                <div class="d-flex gap-1">
+                                    <button type="button" id="clear-filters" class="btn btn-outline-secondary btn-sm"
+                                            title="Clear all filters">
+                                        <i class="material-symbols-outlined" style="font-size: 16px;">clear</i>
+                                    </button>
+                                    <button type="button" id="export-filtered" class="btn btn-outline-primary btn-sm"
+                                            title="Export filtered results">
+                                        <i class="material-symbols-outlined" style="font-size: 16px;">download</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Quick Filter Chips -->
+                        <div class="mt-3" style="margin: 10px;">
+                            <div class="d-flex flex-wrap gap-3 align-items-center">
+                                <!--                        <span class="small text-muted" style="margin-left: 20px">Quick filters:</span>-->
+                                <button type="button" class="btn btn-outline-success btn-sm quick-filter" data-filter="status"
+                                        data-value="Available">
+                                    Available Only
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm quick-filter" data-filter="status"
+                                        data-value="Booked">
+                                    Booked Only
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-sm quick-filter" data-filter="date"
+                                        data-value="today">
+                                    Today's Pickups
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm quick-filter" data-filter="date"
+                                        data-value="week">
+                                    This Week
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-filter"
+                                        data-filter="equipment" data-value="Dry Van">
+                                    Dry Van Only
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body table-responsive">
+                        {{#if userShipments.length}}
+                            <table class="table table-hover align-middle" id="shipmentsTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="sortable" data-sort="shipmentNumber">
+                                        Shipment #
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="origin">
+                                        Origin
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="destination">
+                                        Destination
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="distance">
+                                        Distance
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="pickupDate">
+                                        Pickup
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="deliveryDate">
+                                        Delivery
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="rate">
+                                        Rate
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="equipmentType">
+                                        Equipment
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="weight">
+                                        Weight
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                    <th scope="col" class="sortable" data-sort="status">
+                                        Status
+                                        <i class="material-symbols-outlined sort-icon">unfold_more</i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody id="shipments-tbody">
+                                {{#each userShipments}}
+                                    <tr class="shipment-row" data-id="{{this._id}}"
+                                        data-shipment-number="{{this.shipmentNumber}}"
+                                        data-origin="{{this.origin.city}}, {{this.origin.state}}"
+                                        data-destination="{{this.destination.city}}, {{this.destination.state}}"
+                                        data-status="{{this.status}}"
+                                        data-equipment="{{this.equipmentType}}"
+                                        data-pickup="{{this.pickupDate}}"
+                                        data-delivery="{{this.deliveryDate}}"
+                                        data-rate="{{this.rate.amount}}"
+                                        data-distance="{{this.distance}}"
+                                        data-weight="{{this.weight}}">
+                                        <td class="fw-medium">{{this.shipmentNumber}}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-medium">{{this.origin.city}}, {{this.origin.state}}</div>
+                                                    <!--                                            <small class="text-muted">{{this.origin.address}}</small>-->
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <div class="fw-medium">{{this.destination.city}}
+                                                        , {{this.destination.state}}
+                                                    </div>
+                                                    <!--                                            <small class="text-muted">{{this.destination.address}}</small>-->
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark">{{this.distance}} mi</span>
+                                        </td>
+                                        <td>
+                                            <div class="small">
+                                                <div class="fw-medium">{{formatDate this.pickupDate}}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="small">
+                                                <div class="fw-medium">{{formatDate this.deliveryDate}}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {{#if this.baseRate.amount}}
+                                                <div class="fw-medium">${{formatCurrency this.baseRate.amount}}</div>
+                                                <small class="text-muted">
+                                                    {{#if this.ratePerMile}}
+                                                        ${{formatCurrency this.ratePerMile}}/mi
+                                                    {{else}}
+                                                        —
+                                                    {{/if}}
+                                                </small>
+                                            {{else}}
+                                                <em class="text-muted">N/A</em>
+                                            {{/if}}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{this.equipmentType}}</span>
+                                        </td>
+                                        <td>
+                                            {{formatNumber this.weight}} lbs
+                                        </td>
+                                        <td>
+                                            {{this.status}}
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                            <!-- Results Summary -->
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                <div class="text-muted small">
+                                    Showing <span id="visible-count">{{userShipments.length}}</span> of <span
+                                        id="total-count">{{userShipments.length}}</span> shipments
+                                </div>
+                                <div class="d-flex gap-2">
+                                </div>
+                            </div>
+                        {{else}}
+                            <div class="text-center py-5">
+                                <i class="material-symbols-outlined text-muted mb-3" style="font-size: 64px;">local_shipping</i>
+                                <h6 class="text-muted">No shipments posted yet</h6>
+                                <p class="text-muted mb-3">Get started by creating your first shipment</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newShipmentModal">
+                                    <i class="material-symbols-outlined me-2">add</i>
+                                    Create First Shipment
+                                </button>
+                            </div>
+                        {{/if}}
+                    </div>
+                </div>
+    </div>
+</div>
+
+
+
+{{> shipmentDetailsModal}}
+{{> newShipmentModal}}
+{{> newAccountModal}}
+<script src="/javascripts/dashboard/shipmentDetailsModal.js"></script>
+<script src="/javascripts/dashboard/filters.js"></script>
+<script src="/javascripts/dashboard/newShipmentForm.js"></script>
+<script src="/javascripts/dashboard/ratePerMile.js"></script>
+<script src="/javascripts/dashboard/sidebar.js"></script>
+<!--<script src="/javascripts/dashboard/showContent.js"></script>-->
+<!--<script src="/javascripts/dashboard/reloadModal.js"></script>-->
+<script src="/javascripts/dashboard/newAccountSteps.js"></script>
+
+<script>
+    document.getElementById("newShipmentIconButton").addEventListener("click", function () {
+        const modal = new bootstrap.Modal(document.getElementById("newShipmentModal"));
+        modal.show();
+    });
+</script>
+<script>
+    document.getElementById("newAccountIconButton").addEventListener("click", function () {
+        const modal = new bootstrap.Modal(document.getElementById("newAccountModal"));
+        modal.show();
+    });
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsfTIPST3VlB6Wz4hnUalfzSxAPPd6Ct4&callback=onGoogleMapsReady"></script>
+<script>
+    function onGoogleMapsReady() {
+        // Optional preload hook
+    }
+
+    function initMapWithRoute(origin, destination) {
+        if (!window.google || !google.maps) {
+            console.error("Google Maps not loaded");
+            return;
+        }
+
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: false,
+            preserveViewport: false,
+        });
+
+        const request = {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        directionsService.route(request, function (result, status) {
+            if (status === "OK") {
+                directionsRenderer.setDirections(result);
+            } else {
+                console.error("Could not display route due to:", status);
+            }
+        });
+    }
+
+</script>
