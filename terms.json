@@ -1,0 +1,48 @@
+{
+  "terms_and_conditions": [
+    {
+      "title": "Agreement",
+      "body": "This Rate Confirmation (\"Agreement\") constitutes a binding contract between the Broker and the Carrier for the transportation of the shipment described herein. By accepting this load, the Carrier agrees to all terms contained herein and those in the Broker-Carrier Agreement previously executed."
+    },
+    {
+      "title": "Payment Terms",
+      "body": "Broker agrees to pay Carrier the amount indicated on this confirmation within 30 days of receipt of clear, legible copies of the signed Bill of Lading, proof of delivery, and any other required documentation. Early payment options may be available; please contact accounts payable for details. Carrier must invoice within 90 days of delivery or forfeits right to payment."
+    },
+    {
+      "title": "Accessorial Charges",
+      "body": "Accessorial charges must be pre-approved in writing by Broker. Unauthorized charges will not be reimbursed. Valid documentation must be submitted with the invoice for any accessorials such as: Detention, Layover, Lumper fees, Reconsignment, Temperature control, Hazmat handling."
+    },
+    {
+      "title": "Detention Policy",
+      "body": "Carrier is entitled to detention pay of $XX/hour after a 2-hour grace period, provided that time-in/time-out is properly noted and signed on the Bill of Lading. Maximum daily detention shall not exceed $XXX unless otherwise agreed."
+    },
+    {
+      "title": "Carrier Responsibilities",
+      "body": "Carrier must: Maintain all required FMCSA/DOT authority and insurance; Ensure proper loading, securing, and transportation of freight; Provide real-time updates, including check-in/out times and shipment delays; Use only Carrier-owned or authorized equipment and personnel (no double brokering allowed); Notify Broker immediately of any cargo damage, delays, or incidents."
+    },
+    {
+      "title": "Cargo Claims",
+      "body": "Carrier is liable for loss, damage, or delay to cargo as per the Carmack Amendment (49 USC §14706). All claims must be settled in full within 30 days unless otherwise contested with written explanation."
+    },
+    {
+      "title": "Insurance Requirements",
+      "body": "Carrier must carry the following minimum coverages: $100,000 Cargo Insurance; $1,000,000 Auto Liability; Workers' Compensation as required by law. Proof of coverage must be available upon request."
+    },
+    {
+      "title": "Non-Solicitation Clause",
+      "body": "Carrier shall not solicit or accept business directly from any Shipper, Consignee, or associated entity of any load tendered by Broker for a period of 12 months following the last date of service under this Agreement."
+    },
+    {
+      "title": "Governing Law",
+      "body": "This Agreement shall be governed by and construed in accordance with the laws of the State of [Insert Broker’s State], without regard to its conflict of law provisions."
+    },
+    {
+      "title": "Disputes and Remedies",
+      "body": "Any disputes arising from this agreement shall be resolved through negotiation in good faith. If resolution cannot be achieved, parties agree to arbitration under [specify rules, e.g., AAA Commercial Rules]."
+    },
+    {
+      "title": "Entire Agreement",
+      "body": "This Rate Confirmation, together with the Broker-Carrier Agreement and applicable laws, constitutes the entire agreement between the parties for this load."
+    }
+  ]
+}
